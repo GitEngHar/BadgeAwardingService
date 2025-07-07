@@ -26,8 +26,8 @@ func (c *Config) newConfig(handler ApiGatewayRequestHandler) *Config {
 }
 
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	proxyPath := req.PathParameters["proxy"]
-	var p Batch
+	//proxyPath := req.PathParameters["proxy"]
+	//var p Batch
 
 }
 
