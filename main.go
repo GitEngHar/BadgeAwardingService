@@ -1,5 +1,7 @@
 package main
 
+//https://chatgpt.com/c/686bd60e-fa74-800e-ab2f-0aa558a91f8c
+
 import (
 	"fmt"
 )

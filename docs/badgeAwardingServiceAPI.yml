@@ -60,6 +60,7 @@ components:
         - id
         - name
         - description
+        - iconUrl
       properties:
         id:
           type: string
