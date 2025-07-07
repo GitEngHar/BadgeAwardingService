@@ -1,0 +1,102 @@
+openapi: 3.0.1
+info:
+  title: Badge Awarding Service API
+  version: 1.0.0
+  description: API for defining badges and awarding them to users
+paths:
+  /badges:
+    get:
+      summary: List all badge definitions
+      operationId: listBadges
+      responses:
+        '200':
+          description: Array of badge definitions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadgeDefinition'
+  /users/{userId}/badges:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: List badges awarded to a user
+      operationId: listUserBadges
+      responses:
+        '200':
+          description: Array of user badges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserBadge'
+    post:
+      summary: Award a badge to a user
+      operationId: awardBadge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AwardBadgeInput'
+      responses:
+        '201':
+          description: Badge awarded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBadge'
+components:
+  schemas:
+    BadgeDefinition:
+      type: object
+      required:
+        - id
+        - name
+        - description
+      properties:
+        id:
+          type: string
+          description: Unique badge identifier
+        name:
+          type: string
+          description: Badge name
+        description:
+          type: string
+          description: Details about the badge criteria
+        iconUrl:
+          type: string
+          format: uri
+          description: URL to badge icon image
+    AwardBadgeInput:
+      type: object
+      required:
+        - badgeId
+      properties:
+        badgeId:
+          type: string
+          description: ID of the badge to award
+        description:
+          type: string
+          description: Custom message or reason for awarding the badge
+        iconUrl:
+          type: string
+          format: uri
+          description: Optional override URL for the badge icon
+    UserBadge:
+      allOf:
+        - $ref: '#/components/schemas/BadgeDefinition'
+        - type: object
+          properties:
+            awardedAt:
+              type: string
+              format: date-time
+              description: Timestamp when badge was awarded
+          required:
+            - awardedAt
