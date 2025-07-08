@@ -2,35 +2,28 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"net/http"
 )
 
-type Batch struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	IconUri     string `json:"icon_uri"`
-}
-
-type ApiGatewayRequestHandler interface {
-	Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
-}
-
-type Config struct {
-	apiGatewayHandler ApiGatewayRequestHandler
-}
-
-func (c *Config) newConfig(handler ApiGatewayRequestHandler) *Config {
-	c.apiGatewayHandler = handler
-	return c
+type Response struct {
+	Message string `json:"message"`
 }
 
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	//proxyPath := req.PathParameters["proxy"]
-	//var p Batch
-
+	body, err := json.Marshal(Response{Message: "Hello, SAM Local!"})
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: http.StatusInternalServerError}, err
+	}
+	return events.APIGatewayProxyResponse{
+		StatusCode: http.StatusOK,
+		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       string(body),
+	}, nil
 }
 
 func main() {
-
+	lambda.Start(handler)
 }
