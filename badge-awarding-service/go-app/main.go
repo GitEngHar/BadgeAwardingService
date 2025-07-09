@@ -9,12 +9,19 @@ import (
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var greeting string
+	proxyPath := request.PathParameters["proxy"]
 	sourceIP := request.RequestContext.Identity.SourceIP
 
 	if sourceIP == "" {
 		greeting = "Hello, world!\n"
 	} else {
 		greeting = fmt.Sprintf("Hello, %s!\n", sourceIP)
+	}
+
+	if proxyPath != "" {
+		greeting = fmt.Sprintf("%s\n path: %s!\n", greeting, proxyPath)
+	} else {
+		greeting = fmt.Sprintf("%s\n path: %s!\n", greeting, "path empty")
 	}
 
 	return events.APIGatewayProxyResponse{
