@@ -27,10 +27,15 @@ Resources:
       Architectures:
       - x86_64
       Events:
-        CatchAll:
+        CatchHello:
           Type: Api
           Properties:
             Path: /hello
+            Method: GET
+        CatchProxy:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
             Method: GET
       Environment:
         Variables:
