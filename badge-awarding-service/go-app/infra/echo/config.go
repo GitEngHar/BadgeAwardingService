@@ -1,4 +1,4 @@
-package echo
+package infra
 
 import (
 	"fmt"
@@ -7,19 +7,19 @@ import (
 	"strconv"
 )
 
-type Config struct {
+type EchoConfig struct {
 	port   string
 	server *echo.Echo
 	router *Router
 }
 
-func NewConfig(port string, router *Router) *Config {
+func NewEchoConfig(port string, router *Router) *EchoConfig {
 	if _, err := strconv.Atoi(port); err != nil {
 		log.Fatalf("port must be an integer")
 		return nil
 	}
 
-	return &Config{
+	return &EchoConfig{
 		port:   fmt.Sprintf(":%s", port),
 		router: router,
 	}
