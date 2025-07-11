@@ -20,7 +20,7 @@ type UserRepository interface {
 	Delete(ctx context.Context, user User) error
 }
 
-func NewUserFactory(u User) *User {
+func NewUser(u User) *User {
 	return &User{
 		id:          u.id,
 		mailAddress: u.mailAddress,
