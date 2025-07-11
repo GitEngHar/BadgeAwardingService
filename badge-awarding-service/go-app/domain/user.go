@@ -6,14 +6,11 @@ import (
 )
 
 type User struct {
-	id         string
-	name       string
-	batchID    string
-	getBatchAt time.Time
-}
-
-type UserFactory struct {
-	u User
+	id          string
+	mailAddress string
+	name        string
+	batchID     string
+	getBatchAt  time.Time
 }
 
 type UserRepository interface {
@@ -23,6 +20,12 @@ type UserRepository interface {
 	Delete(ctx context.Context, user User) error
 }
 
-func NewUserFactory(u User) *UserFactory {
-	return &UserFactory{u}
+func NewUserFactory(u User) *User {
+	return &User{
+		id:          u.id,
+		mailAddress: u.mailAddress,
+		name:        u.name,
+		batchID:     u.batchID,
+		getBatchAt:  u.getBatchAt,
+	}
 }
