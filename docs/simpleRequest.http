@@ -3,3 +3,9 @@ GET http://localhost:3000/hello
 
 ### GET proxy path
 GET http://localhost:3000/proxy/varify
+
+#### GET health path
+GET http://localhost:3000/health
+
+#### GET health path
+GET http://localhost:3000/health/proxy
