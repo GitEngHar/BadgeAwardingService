@@ -14,9 +14,9 @@ type User struct {
 }
 
 type UserRepository interface {
+	Upsert(ctx context.Context, user User) error
 	Create(ctx context.Context, user User) error
 	Get(ctx context.Context, user User) (User, error)
-	Update(ctx context.Context, user User) error
 	Delete(ctx context.Context, user User) error
 }
 

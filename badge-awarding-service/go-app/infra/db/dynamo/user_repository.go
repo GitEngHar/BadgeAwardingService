@@ -1,1 +1,3 @@
 package dynamo
+
+type
