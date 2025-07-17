@@ -1,3 +1,5 @@
 package dynamo
 
-type
+type UserRepository struct {
+	config Config
+}
