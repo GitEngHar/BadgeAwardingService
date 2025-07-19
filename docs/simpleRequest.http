@@ -9,3 +9,13 @@ GET http://localhost:3000/health
 
 #### GET health path
 GET http://localhost:3000/health/proxy
+
+### POST user
+
+POST http://localhost:1323/
+Content-Type: application/json
+
+{
+  "name": "haruki",
+  "mail": "hogehoge@gmail.com"
+}

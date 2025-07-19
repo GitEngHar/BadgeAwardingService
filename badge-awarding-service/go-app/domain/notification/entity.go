@@ -2,11 +2,12 @@ package notification
 
 import (
 	"context"
+	"hello-world/domain"
 	"time"
 )
 
 type MessagePublisher interface {
-	Publish(ctx context.Context, message MailMessage) error
+	Publish(ctx context.Context, message domain.MailMessage) error
 }
 
 type Subscriber struct {

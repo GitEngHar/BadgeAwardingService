@@ -1,6 +1,7 @@
 package management
 
 import (
+	"hello-world/domain"
 	"time"
 )
 
@@ -26,18 +27,21 @@ func NewBadge(id, name, url, description string) (*Badge, error) {
 
 type User struct {
 	ID          string
-	MailAddress string
+	MailAddress domain.Mail
 	Name        string
-	BatchID     string
-	GetBatchAt  time.Time
 }
 
-func NewUser(id, mailAddress, name string) *User {
+func NewUser(email, name string) (*User, error) {
+	userMail, err := domain.NewMail(email)
+	if err != nil {
+		return nil, err
+	}
+	id := NewUserID()
 	return &User{
 		ID:          id,
-		MailAddress: mailAddress,
+		MailAddress: userMail,
 		Name:        name,
-	}
+	}, nil
 }
 
 type UserBadge struct {

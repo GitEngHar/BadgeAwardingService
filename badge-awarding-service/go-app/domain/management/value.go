@@ -2,6 +2,7 @@ package management
 
 import (
 	"errors"
+	"github.com/segmentio/ksuid"
 	"net/url"
 )
 
@@ -21,4 +22,10 @@ func NewImageUrl(imageUrl string) (ImageUrl, error) {
 func isValidImageUrl(imageUrl string) bool {
 	_, err := url.ParseRequestURI(imageUrl)
 	return err != nil
+}
+
+func NewUserID() string {
+	id := ksuid.New().String()
+	short := id[:26]
+	return short
 }
