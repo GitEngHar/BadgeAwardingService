@@ -11,11 +11,11 @@ import (
 	"os"
 )
 
-type MailQueue struct {
+type Publisher struct {
 	config Config
 }
 
-func NewConnection(ctx context.Context) *Config {
+func NewConfig(ctx context.Context) *Config {
 	// queueのURLを取得
 	queueURL := os.Getenv("QUEUE_URL")
 	if queueURL == "" {
@@ -37,11 +37,11 @@ func NewConnection(ctx context.Context) *Config {
 	}
 }
 
-func NewMailQueue(config Config) notification.MessagePublisher {
-	return MailQueue{config: config}
+func NewPublisher(config Config) notification.MessagePublisher {
+	return Publisher{config: config}
 }
 
-func (q MailQueue) PublishMailMessage(ctx context.Context, messageBody string, sqsMessageAttributes map[string]types.MessageAttributeValue) error {
+func (q Publisher) PublishMailMessage(ctx context.Context, messageBody string, sqsMessageAttributes map[string]types.MessageAttributeValue) error {
 	input := &sqs.SendMessageInput{
 		QueueUrl:          &q.config.queueUrl,
 		MessageBody:       aws.String(messageBody),
