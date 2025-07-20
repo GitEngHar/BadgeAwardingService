@@ -5,5 +5,6 @@ import (
 )
 
 type Config struct {
-	client *sns.Client
+	topicArn string
+	client   *sns.Client
 }

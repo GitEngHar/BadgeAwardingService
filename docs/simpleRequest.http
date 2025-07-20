@@ -19,3 +19,24 @@ Content-Type: application/json
   "name": "haruki",
   "mail": "hogehoge@gmail.com"
 }
+
+### POST queue
+
+POST http://localhost:1323/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "message": "hello",
+  "address": "harukii1999@gmail.com",
+  "message_body": "test_body"
+}
+
+### POST subscription
+
+POST http://localhost:1323/
+Content-Type: application/json
+
+{
+  "endpoint": "harukii1999@gmail.com"
+}
