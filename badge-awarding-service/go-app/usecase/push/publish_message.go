@@ -7,15 +7,15 @@ import (
 	"hello-world/domain/notification"
 )
 
-type ToUserUseCase struct {
+type PublishMessageUseCase struct {
 	repo notification.MessagePublisher
 }
 
-func NewToUserUseCase(repo notification.MessagePublisher) *ToUserUseCase {
-	return &ToUserUseCase{repo: repo}
+func NewPublishMessageUseCase(repo notification.MessagePublisher) *PublishMessageUseCase {
+	return &PublishMessageUseCase{repo: repo}
 }
 
-func (uc ToUserUseCase) Do(ctx context.Context, messageBody, userName, address, message string) error {
+func (uc PublishMessageUseCase) Do(ctx context.Context, messageBody, userName, address, message string) error {
 	// sqsに送信するinputを生成
 	sqsAttributeValues := map[string]types.MessageAttributeValue{
 		"userName": {

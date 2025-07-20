@@ -27,11 +27,11 @@ func (h Handler) Do(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	// repo実体化
-	sqsConfig := queue.NewConnection(ctx.Request().Context())
-	repo := queue.NewMailQueue(*sqsConfig)
+	sqsConfig := queue.NewConfig(ctx.Request().Context())
+	repo := queue.NewPublisher(*sqsConfig)
 
 	// useCase実体化
-	uc := usecase.NewToUserUseCase(repo)
+	uc := usecase.NewPublishMessageUseCase(repo)
 
 	// sqsにメッセージをパブリッシュ
 	err := uc.Do(ctx.Request().Context(), publisher.MessageBody, publisher.UserName, publisher.Address, publisher.Message)
