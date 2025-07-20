@@ -2,6 +2,7 @@ package notification
 
 import (
 	"context"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
 type SubscriberService interface {
@@ -15,4 +16,8 @@ type SubscriberRepository interface {
 	Delete(ctx context.Context, id string) error
 	FindAll(ctx context.Context) ([]*Subscriber, error)
 	FindByID(ctx context.Context, id string) (*Subscriber, error)
+}
+
+type MessagePublisher interface {
+	PublishMailMessage(ctx context.Context, messageBody string, sqsMessageAttributes map[string]types.MessageAttributeValue) error
 }
