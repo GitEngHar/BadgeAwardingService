@@ -27,16 +27,12 @@ Content-Type: application/json
 
 {
   "username": "testuser",
-  "message": "hello",
+  "message": "これもテストだよ",
   "address": "harukii1999@gmail.com",
-  "message_body": "test_body"
+  "message_body": "TestMailTitle-1"
 }
 
 ### POST subscription
 
 POST http://localhost:1323/
 Content-Type: application/json
-
-{
-  "endpoint": "harukii1999@gmail.com"
-}
