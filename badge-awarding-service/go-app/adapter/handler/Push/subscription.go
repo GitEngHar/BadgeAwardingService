@@ -15,6 +15,7 @@ func NewSubscriptionHandler() infra.Handler {
 	return SubscriptionHandler{}
 }
 
+// Do TODO: echoの依存性を解放する
 func (h SubscriptionHandler) Do(ctx echo.Context) error {
 	// repo実体化
 	snsConfig := sns.NewConfig(ctx.Request().Context())

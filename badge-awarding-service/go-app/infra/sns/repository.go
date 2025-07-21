@@ -3,6 +3,7 @@ package sns
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
@@ -46,7 +47,39 @@ func (s Subscription) SubscribeEmail(ctx context.Context, endpoint string) error
 	return err
 }
 
-func (s Subscription) UnSubscribeEmail(ctx context.Context, subscription notification.Subscriber) error {
+func (s Subscription) UnSubscribeByEndpoint(ctx context.Context, endpoint string) error {
+	paginator := sns.NewListSubscriptionsByTopicPaginator(s.config.client, &sns.ListSubscriptionsByTopicInput{
+		TopicArn: aws.String(s.config.topicArn),
+	})
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(ctx)
+		if err != nil {
+			return err
+		}
+
+		for _, sub := range page.Subscriptions {
+			if strings.EqualFold(aws.ToString(sub.Endpoint), endpoint) {
+				if sub.SubscriptionArn != nil && *sub.SubscriptionArn != "PendingConfirmation" {
+					_, err := s.config.client.Unsubscribe(ctx, &sns.UnsubscribeInput{
+						SubscriptionArn: aws.String(*sub.SubscriptionArn),
+					})
+
+					if err != nil {
+						return err
+					}
+					fmt.Printf("Unsubscribed from %s to %s\n", *sub.SubscriptionArn, *sub.TopicArn)
+					return nil
+				} else {
+					fmt.Printf("Not unsubscribed because user confirmation email from %s to %s\n", *sub.SubscriptionArn, *sub.TopicArn)
+					return nil
+				}
+			}
+		}
+
+		fmt.Println("No subscription found to unsubscribe")
+		return nil
+	}
 	return nil
 }
 

@@ -21,6 +21,7 @@ func NewPublisherHandler() infra.Handler {
 	return Handler{}
 }
 
+// Do TODO: echoの依存性を解放する
 func (h Handler) Do(ctx echo.Context) error {
 	var publisher Publisher
 	if err := ctx.Bind(&publisher); err != nil {

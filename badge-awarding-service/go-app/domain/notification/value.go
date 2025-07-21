@@ -2,6 +2,7 @@ package notification
 
 import (
 	"errors"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
@@ -10,6 +11,21 @@ type Publisher struct {
 	Message     string `json:"message"`
 	Address     string `json:"address"`
 	MessageBody string `json:"message_body"`
+}
+
+type UnSubscriptionEndpoint struct {
+	Address string `json:"address"`
+}
+
+func SqsMessageAttributesToEndpoint(record events.SQSMessage) (*UnSubscriptionEndpoint, error) {
+	var endpoint UnSubscriptionEndpoint
+	if v, ok := record.MessageAttributes["address"]; ok && v.StringValue != nil {
+		endpoint.Address = *v.StringValue
+	}
+	if isEmptyUnsubscriptionEndpoint(endpoint) {
+		return nil, errors.New("unsubscription address is empty")
+	}
+	return &endpoint, nil
 }
 
 func SqsMessageAttributesToPublisher(message types.Message) (*Publisher, error) {
@@ -23,7 +39,7 @@ func SqsMessageAttributesToPublisher(message types.Message) (*Publisher, error) 
 	if v, ok := message.MessageAttributes["message"]; ok && v.StringValue != nil {
 		publisher.Message = *v.StringValue
 	}
-	if isEmpty(publisher) {
+	if isEmptyPublisher(publisher) {
 		return nil, errors.New("missing required field 'address'")
 	}
 	// userNameは不要なのでコメントアウトにしておく
@@ -33,6 +49,10 @@ func SqsMessageAttributesToPublisher(message types.Message) (*Publisher, error) 
 	return &publisher, nil
 }
 
-func isEmpty(publisher Publisher) bool {
+func isEmptyUnsubscriptionEndpoint(endpoint UnSubscriptionEndpoint) bool {
+	return endpoint.Address == ""
+}
+
+func isEmptyPublisher(publisher Publisher) bool {
 	return publisher.Address == "" && publisher.Message == "" && publisher.MessageBody == ""
 }
