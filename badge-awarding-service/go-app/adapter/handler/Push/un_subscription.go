@@ -17,5 +17,5 @@ func NewUnSubscriptionHandler(uc push.UnSubscriptionUseCase) handler.UnSubscript
 
 // Do 依存性解消のため値はendpointで共通
 func (h *UnSubscriptionHandler) Do(ctx context.Context, endpoint notification.UnSubscriptionEndpoint) error {
-	return h.uc.Do(ctx, endpoint.Endpoint)
+	return h.uc.Do(ctx, endpoint.Address)
 }
