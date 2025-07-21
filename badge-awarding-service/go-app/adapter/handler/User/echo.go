@@ -19,6 +19,7 @@ func NewUserHandler() infra.Handler {
 	return Handler{}
 }
 
+// Do TODO: echoの依存性を解除する
 func (h Handler) Do(ctx echo.Context) error {
 	var user User
 	if err := ctx.Bind(&user); err != nil {
