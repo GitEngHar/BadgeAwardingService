@@ -3,14 +3,11 @@ package Push
 import (
 	"github.com/labstack/echo/v4"
 	infra "hello-world/infra/echo"
+	"hello-world/infra/queue"
 	"hello-world/infra/sns"
 	usecase "hello-world/usecase/push"
 	"net/http"
 )
-
-type Subscription struct {
-	Endpoint string `json:"endpoint"`
-}
 
 type SubscriptionHandler struct{}
 
@@ -19,19 +16,16 @@ func NewSubscriptionHandler() infra.Handler {
 }
 
 func (h SubscriptionHandler) Do(ctx echo.Context) error {
-	var subscription Subscription
-	if err := ctx.Bind(&subscription); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
 	// repo実体化
 	snsConfig := sns.NewConfig(ctx.Request().Context())
-	repo := sns.NewSubscription(snsConfig)
-
+	sqsConfig := queue.NewConfig(ctx.Request().Context())
+	subRepo := sns.NewSubscription(snsConfig)
+	pubRepo := queue.NewPublisher(*sqsConfig)
 	// useCase実体化
-	uc := usecase.NewSubscriptionUseCase(repo)
+	uc := usecase.NewSubscriptionUseCase(subRepo, pubRepo)
 
 	// sqsにメッセージをパブリッシュ
-	err := uc.Do(ctx.Request().Context(), subscription.Endpoint)
+	err := uc.Do(ctx.Request().Context())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

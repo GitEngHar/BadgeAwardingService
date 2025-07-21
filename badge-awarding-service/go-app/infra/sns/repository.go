@@ -50,14 +50,9 @@ func (s Subscription) UnSubscribeEmail(ctx context.Context, subscription notific
 	return nil
 }
 
-// TODO: sqsから値を受け取って送信できるように変更する
-func (s Subscription) SendMessageToEmail(ctx context.Context, endpoint string) error {
-	var mockSQSMessage = map[string]string{
-		"sub":     "Hello Title",
-		"message": "Hello Message",
-	}
+func (s Subscription) SendMessageToEmail(ctx context.Context, publisher notification.Publisher) error {
 
-	isExistsEndpoint, err := s.isEmailSubscribed(ctx, endpoint)
+	isExistsEndpoint, err := s.isEmailSubscribed(ctx, publisher.Address)
 
 	if err != nil {
 		return err
@@ -65,7 +60,7 @@ func (s Subscription) SendMessageToEmail(ctx context.Context, endpoint string) e
 
 	// 送信前に確認メールが走るので、作られていない場合はDeadLetterQueueに送信して確認メールを送る
 	if !isExistsEndpoint {
-		if err := s.SubscribeEmail(ctx, endpoint); err != nil {
+		if err := s.SubscribeEmail(ctx, publisher.Address); err != nil {
 			return err
 		}
 		// DeadLetterQueueに送り返す
@@ -74,8 +69,8 @@ func (s Subscription) SendMessageToEmail(ctx context.Context, endpoint string) e
 
 	_, err = s.config.client.Publish(ctx, &sns.PublishInput{
 		TopicArn: aws.String(s.config.topicArn),
-		Message:  aws.String(mockSQSMessage["message"]),
-		Subject:  aws.String(mockSQSMessage["sub"]),
+		Message:  aws.String(publisher.Message),
+		Subject:  aws.String(publisher.MessageBody),
 	})
 
 	if err != nil {

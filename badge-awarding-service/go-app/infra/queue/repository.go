@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -15,6 +16,10 @@ type Publisher struct {
 	config Config
 }
 
+var (
+	notFoundMessage = errors.New("publisher(sqs queue) not exists")
+)
+
 func NewConfig(ctx context.Context) *Config {
 	// queueのURLを取得
 	queueURL := os.Getenv("QUEUE_URL")
@@ -25,6 +30,7 @@ func NewConfig(ctx context.Context) *Config {
 	// AWS設定をロード
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
+
 		panic("unable to load SDK config, " + err.Error())
 	}
 
@@ -53,4 +59,23 @@ func (q Publisher) PublishMailMessage(ctx context.Context, messageBody string, s
 	}
 	fmt.Println("Successfully published message")
 	return nil
+}
+
+func (q Publisher) GetMailMessage(ctx context.Context) ([]types.Message, error) {
+	revResp, err := q.config.client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
+		QueueUrl:              aws.String(q.config.queueUrl),
+		MaxNumberOfMessages:   10, //最大件数
+		WaitTimeSeconds:       1,
+		VisibilityTimeout:     5,
+		MessageAttributeNames: []string{"All"},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(revResp.Messages) == 0 {
+		return nil, notFoundMessage
+	}
+	return revResp.Messages, nil
 }
