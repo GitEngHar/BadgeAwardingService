@@ -12,6 +12,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	userHandler := handler.NewUserHandler()
+
 	router := infra.NewRouter(e, userHandler, "POST")
 	config := infra.NewEchoConfig("1323", router)
 	echoRepo := infra.NewEchoRepository(config)

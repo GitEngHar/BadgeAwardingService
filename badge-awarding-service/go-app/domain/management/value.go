@@ -12,6 +12,11 @@ var (
 	InvalidImageUrl = errors.New("invalid image url")
 )
 
+type UserDTO struct {
+	Name string `json:"name"`
+	Mail string `json:"mail"`
+}
+
 func NewImageUrl(imageUrl string) (ImageUrl, error) {
 	if isValidImageUrl(imageUrl) {
 		return ImageUrl(imageUrl), nil

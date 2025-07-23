@@ -2,7 +2,6 @@ package Push
 
 import (
 	"context"
-	"hello-world/adapter/handler"
 	"hello-world/domain/notification"
 	"hello-world/usecase/push"
 )
@@ -11,7 +10,7 @@ type UnSubscriptionHandler struct {
 	uc push.UnSubscriptionUseCase
 }
 
-func NewUnSubscriptionHandler(uc push.UnSubscriptionUseCase) handler.UnSubscriptionHandler {
+func NewUnSubscriptionHandler(uc push.UnSubscriptionUseCase) *UnSubscriptionHandler {
 	return &UnSubscriptionHandler{uc: uc}
 }
 

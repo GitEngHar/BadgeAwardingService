@@ -2,7 +2,6 @@ package Push
 
 import (
 	"github.com/labstack/echo/v4"
-	infra "hello-world/infra/echo"
 	"hello-world/infra/queue"
 	usecase "hello-world/usecase/push"
 	"net/http"
@@ -17,8 +16,8 @@ type Publisher struct {
 
 type Handler struct{}
 
-func NewPublisherHandler() infra.Handler {
-	return Handler{}
+func NewPublisherHandler() *Handler {
+	return &Handler{}
 }
 
 // Do TODO: echoの依存性を解放する

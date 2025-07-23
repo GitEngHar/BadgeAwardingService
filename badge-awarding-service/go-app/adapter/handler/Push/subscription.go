@@ -2,7 +2,6 @@ package Push
 
 import (
 	"github.com/labstack/echo/v4"
-	infra "hello-world/infra/echo"
 	"hello-world/infra/queue"
 	"hello-world/infra/sns"
 	usecase "hello-world/usecase/push"
@@ -11,8 +10,8 @@ import (
 
 type SubscriptionHandler struct{}
 
-func NewSubscriptionHandler() infra.Handler {
-	return SubscriptionHandler{}
+func NewSubscriptionHandler() *SubscriptionHandler {
+	return &SubscriptionHandler{}
 }
 
 // Do TODO: echoの依存性を解放する
