@@ -6,7 +6,7 @@ import (
 )
 
 type Handler interface {
-	Do(ctx echo.Context) error
+	Hub(ctx echo.Context) error
 }
 type Router struct {
 	server     *echo.Echo
@@ -33,13 +33,13 @@ func (r *Router) Do() {
 	server := r.server
 	switch r.methodType {
 	case "GET":
-		server.GET("/", r.handler.Do)
+		server.GET("/", r.handler.Hub)
 	case "POST":
-		server.POST("/", r.handler.Do)
+		server.POST("/", r.handler.Hub)
 	case "PUT":
-		server.PUT("/", r.handler.Do)
+		server.PUT("/", r.handler.Hub)
 	case "DELETE":
-		server.DELETE("/", r.handler.Do)
+		server.DELETE("/", r.handler.Hub)
 	}
 
 }
