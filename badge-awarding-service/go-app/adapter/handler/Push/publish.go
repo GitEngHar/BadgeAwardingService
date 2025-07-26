@@ -1,6 +1,7 @@
 package Push
 
 import (
+	"context"
 	"github.com/labstack/echo/v4"
 	"hello-world/infra/queue"
 	usecase "hello-world/usecase/push"
@@ -21,22 +22,26 @@ func NewPublisherHandler() *Handler {
 }
 
 // Do TODO: echoの依存性を解放する
-func (h Handler) Do(ctx echo.Context) error {
-	var publisher Publisher
-	if err := ctx.Bind(&publisher); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+func (h Handler) Do(ctx context.Context, publisher Publisher) error {
 	// repo実体化
-	sqsConfig := queue.NewConfig(ctx.Request().Context())
+	sqsConfig := queue.NewConfig(ctx)
 	repo := queue.NewPublisher(*sqsConfig)
 
 	// useCase実体化
 	uc := usecase.NewPublishMessageUseCase(repo)
 
 	// sqsにメッセージをパブリッシュ
-	err := uc.Do(ctx.Request().Context(), publisher.MessageBody, publisher.UserName, publisher.Address, publisher.Message)
+	err := uc.Do(ctx, publisher.MessageBody, publisher.UserName, publisher.Address, publisher.Message)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return nil
+}
+
+func (h Handler) Hub(ctx echo.Context) error {
+	var publisher Publisher
+	if err := ctx.Bind(&publisher); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return h.Do(ctx.Request().Context(), publisher)
 }
