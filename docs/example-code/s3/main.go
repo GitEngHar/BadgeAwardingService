@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
-	"log"
+	"fmt"
+	"io"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -10,44 +10,48 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-var (
-	filePath   = "./test.jpg"
-	bucketName = "my-test-bucket"
-	s3ImgPath  = "image/test.jpg"
-	awsRegion  = "ap-northeast-1"
-)
-
 func main() {
-	file, err := os.Open(filePath)
+	// 変数を定義
+	bucket := "my-test-bucket-badge-award-valid"
+	key := "image/test.png" // S3内の画像パス
+	output := "test.png"    // ローカルに保存するファイル名
+
+	// セッション作成（デフォルトの環境変数・認証情報を利用）
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("ap-northeast-1"), // 東京リージョンなどに変更してください
+	})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Failed to create session,", err)
+		return
 	}
 
-	// session create
-	newSession := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
+	// S3クライアント作成
+	svc := s3.New(sess)
 
-	// s3 client create
-	svc := s3.New(newSession, &aws.Config{Region: aws.String(awsRegion)})
-
-	downloadKey := &s3.GetObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(s3ImgPath),
-	}
-
-	image, err := svc.GetObject(downloadKey)
+	// GetObjectを呼び出して画像を取得
+	result, err := svc.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Failed to download image,", err)
+		return
 	}
-	//image -> bytes.Buffer
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(image.Body)
+	defer result.Body.Close()
 
-	// ファイルに書き込みします。
-	_, err = file.Write(buf.Bytes())
+	// ローカルファイルに保存
+	file, err := os.Create(output)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Failed to create file,", err)
+		return
 	}
-	log.Println("Finished Download from S3 ")
+	defer file.Close()
+
+	_, err = io.Copy(file, result.Body)
+	if err != nil {
+		fmt.Println("Failed to write file,", err)
+		return
+	}
+
+	fmt.Println("Image downloaded successfully:", output)
 }
