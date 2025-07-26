@@ -5,6 +5,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.44.0
 	github.com/aws/aws-sdk-go-v2/service/sns v1.34.7
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.38.8
+	github.com/google/go-cmp v0.7.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/segmentio/ksuid v1.0.4
 )
