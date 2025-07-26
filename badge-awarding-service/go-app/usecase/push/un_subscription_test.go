@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"hello-world/domain/notification"
 )
 
@@ -27,7 +28,7 @@ func TestUnSubscriptionUseCase_Do(t *testing.T) {
 	if err := uc.Do(context.Background(), "addr@example.com"); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if repo.endpoint != "addr@example.com" {
-		t.Errorf("expected endpoint 'addr@example.com', got %s", repo.endpoint)
+	if diff := cmp.Diff("addr@example.com", repo.endpoint); diff != "" {
+		t.Errorf("endpoint mismatch (-want +got):\n%s", diff)
 	}
 }

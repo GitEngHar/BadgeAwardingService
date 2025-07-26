@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/google/go-cmp/cmp"
 )
 
 type mockUserBadgeRepo struct {
@@ -34,16 +35,17 @@ func TestUpsertUseCase_Do(t *testing.T) {
 		t.Fatal("Upsert was not called")
 	}
 
-	nameAttr, ok := repo.item["name"].(*types.AttributeValueMemberS)
-	if !ok || nameAttr.Value != "Alice" {
-		t.Errorf("unexpected name attribute: %+v", repo.item["name"])
-	}
-	mailAttr, ok := repo.item["mail"].(*types.AttributeValueMemberS)
-	if !ok || mailAttr.Value != "user@example.com" {
-		t.Errorf("unexpected mail attribute: %+v", repo.item["mail"])
-	}
 	idAttr, ok := repo.item["id"].(*types.AttributeValueMemberS)
 	if !ok || idAttr.Value == "" {
-		t.Errorf("id attribute not set: %+v", repo.item["id"])
+		t.Fatalf("id attribute not set: %+v", repo.item["id"])
+	}
+
+	expected := map[string]types.AttributeValue{
+		"id":   idAttr,
+		"name": &types.AttributeValueMemberS{Value: "Alice"},
+		"mail": &types.AttributeValueMemberS{Value: "user@example.com"},
+	}
+	if diff := cmp.Diff(expected, repo.item); diff != "" {
+		t.Errorf("item mismatch (-want +got):\n%s", diff)
 	}
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
+	"github.com/google/go-cmp/cmp"
 )
 
 type mockPublisher struct {
@@ -29,17 +30,16 @@ func TestPublishMessageUseCase_Do(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if repo.body != "body" {
-		t.Errorf("body mismatch: %s", repo.body)
+	if diff := cmp.Diff("body", repo.body); diff != "" {
+		t.Errorf("body mismatch (-want +got):\n%s", diff)
 	}
 
-	if v := repo.attrs["userName"].StringValue; v == nil || *v != "Bob" {
-		t.Errorf("unexpected userName attr: %v", repo.attrs["userName"])
+	expected := map[string]types.MessageAttributeValue{
+		"userName": {DataType: aws.String("String"), StringValue: aws.String("Bob")},
+		"message":  {DataType: aws.String("String"), StringValue: aws.String("hello")},
+		"address":  {DataType: aws.String("String"), StringValue: aws.String("bob@example.com")},
 	}
-	if v := repo.attrs["address"].StringValue; v == nil || *v != "bob@example.com" {
-		t.Errorf("unexpected address attr: %v", repo.attrs["address"])
-	}
-	if v := repo.attrs["message"].StringValue; v == nil || *v != "hello" {
-		t.Errorf("unexpected message attr: %v", repo.attrs["message"])
+	if diff := cmp.Diff(expected, repo.attrs); diff != "" {
+		t.Errorf("message attributes mismatch (-want +got):\n%s", diff)
 	}
 }
