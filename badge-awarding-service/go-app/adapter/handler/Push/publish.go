@@ -21,7 +21,6 @@ func NewPublisherHandler() *Handler {
 	return &Handler{}
 }
 
-// Do TODO: echoの依存性を解放する
 func (h Handler) Do(ctx context.Context, publisher Publisher) error {
 	// repo実体化
 	sqsConfig := queue.NewConfig(ctx)
