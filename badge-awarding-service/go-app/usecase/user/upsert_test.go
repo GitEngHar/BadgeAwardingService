@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
@@ -45,7 +46,11 @@ func TestUpsertUseCase_Do(t *testing.T) {
 		"name": &types.AttributeValueMemberS{Value: "Alice"},
 		"mail": &types.AttributeValueMemberS{Value: "user@example.com"},
 	}
-	if diff := cmp.Diff(expected, repo.item); diff != "" {
+	if diff := cmp.Diff(expected, repo.item,
+		cmpopts.IgnoreUnexported(
+			types.AttributeValueMemberS{},
+		),
+	); diff != "" {
 		t.Errorf("item mismatch (-want +got):\n%s", diff)
 	}
 }

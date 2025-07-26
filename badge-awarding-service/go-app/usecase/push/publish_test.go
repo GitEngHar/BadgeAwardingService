@@ -2,6 +2,7 @@ package push
 
 import (
 	"context"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -39,7 +40,10 @@ func TestPublishMessageUseCase_Do(t *testing.T) {
 		"message":  {DataType: aws.String("String"), StringValue: aws.String("hello")},
 		"address":  {DataType: aws.String("String"), StringValue: aws.String("bob@example.com")},
 	}
-	if diff := cmp.Diff(expected, repo.attrs); diff != "" {
+	if diff := cmp.Diff(expected, repo.attrs,
+		cmpopts.IgnoreUnexported(types.MessageAttributeValue{}),
+	); diff != "" {
 		t.Errorf("message attributes mismatch (-want +got):\n%s", diff)
 	}
+
 }
