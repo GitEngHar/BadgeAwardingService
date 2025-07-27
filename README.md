@@ -1,6 +1,6 @@
 refs: https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/serverless-sam-cli-using-debugging.html
 
-### Manegement Project in github
+### Management Project in github
 [Link](https://github.com/users/GitEngHar/projects/18/views/1)
 
 ### sam local start
