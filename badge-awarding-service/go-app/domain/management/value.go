@@ -2,6 +2,7 @@ package management
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/segmentio/ksuid"
 	"image"
@@ -15,10 +16,12 @@ var (
 	ImageRequireParam = errors.New("image require param is empty")
 )
 
-type BadgeImg struct {
-	// TODO: 想定する使われ方によってはImageURLだけでもいいかもしれない
-	Image    image.Image
-	ImageUrl url.URL
+func CreatePublicBadgeImgUrl(bucket, key string) (*string, error) {
+	if bucket == "" && key == "" {
+		return nil, ImageRequireParam
+	}
+	badgeImgUrl := fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", bucket, "ap-northeast-1", url.PathEscape(key))
+	return &badgeImgUrl, nil
 }
 
 func S3BodyConvertToImage(body *s3.GetObjectOutput) (image.Image, error) {
@@ -33,17 +36,6 @@ func S3BodyConvertToImage(body *s3.GetObjectOutput) (image.Image, error) {
 	}
 
 	return img, nil
-}
-
-func NewBadgeImg(image image.Image, imageUrl url.URL) (*BadgeImg, error) {
-	// TODO: ユースケースが決まったら検査を精査する
-	if image == nil && imageUrl.String() == "" {
-		return nil, ImageRequireParam
-	}
-	return &BadgeImg{
-		Image:    image,
-		ImageUrl: imageUrl,
-	}, nil
 }
 
 type UserDTO struct {

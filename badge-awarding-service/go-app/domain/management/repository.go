@@ -13,5 +13,6 @@ type BadgeUserRepository interface {
 }
 
 type BadgeImgRepository interface {
-	DownloadBadge() (*BadgeImg, error)
+	//DownloadBadge() (*BadgeImg, error)
+
 }

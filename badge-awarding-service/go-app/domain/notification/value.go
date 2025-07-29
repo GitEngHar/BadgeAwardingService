@@ -2,6 +2,7 @@ package notification
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
@@ -15,6 +16,11 @@ type Publisher struct {
 
 type UnSubscriptionEndpoint struct {
 	Address string `json:"address"`
+}
+
+type SendUserMessage struct {
+	Title   string `json:"title"`
+	Message string `json:"message"`
 }
 
 func SqsMessageAttributesToEndpoint(record events.SQSMessage) (*UnSubscriptionEndpoint, error) {
@@ -47,6 +53,16 @@ func SqsMessageAttributesToPublisher(message types.Message) (*Publisher, error) 
 	//	p.UserName = *v.StringValue
 	//}
 	return &publisher, nil
+}
+
+func GenerateSendMessageWithImgUrl(title, publicImgUrl string) (*SendUserMessage, error) {
+	if title == "" && publicImgUrl == "" {
+		return nil, errors.New("message or public image url is empty")
+	}
+	return &SendUserMessage{
+		Title:   title,
+		Message: fmt.Sprintf("<!DOCTYPE html><html><body><h2>%s</h2><img src='%s' /></body></html>", title, publicImgUrl),
+	}, nil
 }
 
 func isEmptyUnsubscriptionEndpoint(endpoint UnSubscriptionEndpoint) bool {
