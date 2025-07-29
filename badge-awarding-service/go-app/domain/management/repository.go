@@ -13,5 +13,5 @@ type BadgeUserRepository interface {
 }
 
 type BadgeImgRepository interface {
-	DownloadBadge(ctx context.Context) (*Badge, error)
+	DownloadBadge() (*BadgeImg, error)
 }
