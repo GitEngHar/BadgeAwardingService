@@ -1,27 +1,22 @@
 package management
 
 import (
+	"errors"
 	"hello-world/domain"
 	"time"
 )
 
 type Badge struct {
-	ID          string
-	Name        string
-	Image       ImageUrl
-	Description string
+	ID     string
+	Name   string
+	Reason string
 }
 
-func NewBadge(id, name, url, description string) (*Badge, error) {
-	imageUrl, err := NewImageUrl(url)
-	if err != nil {
-		return nil, err
-	}
+func NewBadge(id, name, reason string) (*Badge, error) {
 	return &Badge{
-		ID:          id,
-		Name:        name,
-		Image:       imageUrl,
-		Description: description,
+		ID:     id,
+		Name:   name,
+		Reason: reason,
 	}, nil
 }
 
@@ -47,13 +42,42 @@ func NewUser(email, name string) (*User, error) {
 type UserBadge struct {
 	UserID    string
 	BadgeID   string
-	GrantedAt time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-func NewUserBadge(userID string, badgeID string, grantedAt time.Time) *UserBadge {
+func NewUserBadge(userID string, badgeID string, createdAt time.Time, updatedAt time.Time) *UserBadge {
 	return &UserBadge{
 		UserID:    userID,
 		BadgeID:   badgeID,
-		GrantedAt: grantedAt,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
+}
+
+type BadgeDetailsByRank struct {
+	BadgeID   string
+	Rank      string
+	Message   string
+	Effect    string
+	Reason    string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func NewBadgeDetailsByRank(badgeID, Message, Effect, Reason string, rank Rank, createdAt time.Time, updatedAt time.Time) (*BadgeDetailsByRank, error) {
+	rankString := rank.String()
+	if rankString == "Unknown" {
+		return nil, errors.New("unknown rank")
+	}
+
+	return &BadgeDetailsByRank{
+		BadgeID:   badgeID,
+		Rank:      rankString,
+		Message:   Message,
+		Effect:    Effect,
+		Reason:    Reason,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+	}, nil
 }

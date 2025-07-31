@@ -7,10 +7,10 @@ import (
 )
 
 type UpsertUseCase struct {
-	repo management.UserBadgeRepository
+	repo management.UserRepository
 }
 
-func NewUpsertUseCase(repo management.UserBadgeRepository) UpsertUseCase {
+func NewUpsertUseCase(repo management.UserRepository) UpsertUseCase {
 	return UpsertUseCase{
 		repo: repo,
 	}
