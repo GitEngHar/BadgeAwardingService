@@ -32,3 +32,13 @@ func TestUnSubscriptionUseCase_Do(t *testing.T) {
 		t.Errorf("endpoint mismatch (-want +got):\n%s", diff)
 	}
 }
+
+func BenchmarkUnSubscriptionUseCase_Do(b *testing.B) {
+	repo := &mockSubscriberRepo{}
+	uc := NewUnSubscriptionUseCase(repo)
+	b.ReportAllocs()
+	ctx := context.Background()
+	for i := 0; i < b.N; i++ {
+		uc.Do(ctx, "hoge")
+	}
+}
