@@ -43,7 +43,7 @@ func (uc SubscriptionUseCase) Do(ctx context.Context) error {
 		execPublisherCount++
 	}
 
-	fmt.Printf("Plan %d , End %d, Perse: %d%", len(messages), execPublisherCount, execPublisherCount/len(messages))
+	//fmt.Printf("Plan %d , End %d, Perse: %d%", len(messages), execPublisherCount, execPublisherCount/len(messages))
 
 	return nil
 }

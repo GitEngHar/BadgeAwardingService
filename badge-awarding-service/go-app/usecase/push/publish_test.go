@@ -31,7 +31,7 @@ func TestPublishMessageUseCase_Do(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if diff := cmp.Diff("body", repo.body); diff != "" {
+	if diff := cmp.Diff("{\"title\":\"aa\",\"message\":\"\\u003c!DOCTYPE html\\u003e\\u003chtml\\u003e\\u003cbody\\u003e\\u003ch2\\u003eaa\\u003c/h2\\u003e\\u003cimg src='https://bucket.s3.ap-northeast-1.amazonaws.com/keyname' /\\u003e\\u003c/body\\u003e\\u003c/html\\u003e\"}", repo.body); diff != "" {
 		t.Errorf("body mismatch (-want +got):\n%s", diff)
 	}
 
@@ -46,4 +46,13 @@ func TestPublishMessageUseCase_Do(t *testing.T) {
 		t.Errorf("message attributes mismatch (-want +got):\n%s", diff)
 	}
 
+}
+
+func BenchmarkPublishMessageUseCase_Do(b *testing.B) {
+	repo := &mockPublisher{}
+	uc := NewPublishMessageUseCase(repo)
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		uc.Do(context.Background(), "hoge", "hoge", "hoge", "hoge")
+	}
 }
