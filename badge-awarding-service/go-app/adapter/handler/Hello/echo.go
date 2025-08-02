@@ -11,6 +11,11 @@ func NewHelloHandler() *Hello {
 	return &Hello{}
 }
 
-func (h *Hello) Do(c echo.Context) error {
-	return c.JSON(http.StatusOK, []string{"ok"})
+func (h *Hello) Do() (map[string]string, error) {
+	return map[string]string{"hello": "world"}, nil
+}
+
+func (h *Hello) Hub(c echo.Context) error {
+	returnStr, _ := h.Do()
+	return c.JSON(http.StatusOK, returnStr)
 }
