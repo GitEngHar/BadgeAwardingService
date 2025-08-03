@@ -15,21 +15,21 @@ func NewUserHandler() *Handler {
 	return &Handler{}
 }
 
-func (h Handler) Do(ctx context.Context, user management.UserDTO) error {
+func (h Handler) Do(ctx context.Context, user management.UserDTO) (string, error) {
 	// repo実体化
 	dbConf := dynamo.NewConnectionDynamoDBForLocal()
 	repo := dynamo.NewUserRepository(dbConf)
 	// tableの作成
 	if err := repo.CreateTable(ctx); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return "", echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	// useCase実体化
 	uc := usecase.NewUpsertUseCase(repo)
-	err := uc.Do(ctx, user.Mail, user.Name)
+	userID, err := uc.Do(ctx, user.ID, user.Mail, user.Name)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return "", echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	return nil
+	return userID, nil
 }
 
 func (h Handler) Hub(ctx echo.Context) error {
@@ -37,6 +37,9 @@ func (h Handler) Hub(ctx echo.Context) error {
 	if err := ctx.Bind(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-
-	return h.Do(ctx.Request().Context(), user)
+	userID, err := h.Do(ctx.Request().Context(), user)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return ctx.JSON(http.StatusOK, userID)
 }
