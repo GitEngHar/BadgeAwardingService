@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/labstack/echo/v4"
 	"hello-world/infra/db/dynamo"
-	usecase "hello-world/usecase/badge"
+	usecase "hello-world/usecase/badgeRank"
 	"net/http"
 )
 

@@ -20,9 +20,9 @@ func (u GetUseCase) Do(ctx context.Context, id string) (map[string]types.Attribu
 	item := map[string]types.AttributeValue{
 		"id": &types.AttributeValueMemberS{Value: id},
 	}
-	badge, err := u.repo.Get(ctx, item)
+	badgeRank, err := u.repo.Get(ctx, item)
 	if err != nil {
 		return nil, err
 	}
-	return badge, nil
+	return badgeRank, nil
 }
