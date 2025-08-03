@@ -60,8 +60,13 @@ func S3BodyConvertToImage(body *s3.GetObjectOutput) (image.Image, error) {
 }
 
 type UserDTO struct {
+	ID   string `json:"id"`
 	Name string `json:"name"`
 	Mail string `json:"mail"`
+}
+
+type UserID struct {
+	ID string `json:"id"`
 }
 
 func NewImageUrl(imageUrl string) (ImageUrl, error) {

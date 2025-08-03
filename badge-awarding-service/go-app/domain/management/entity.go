@@ -26,14 +26,16 @@ type User struct {
 	Name        string
 }
 
-func NewUser(email, name string) (*User, error) {
+func NewUser(userID, email, name string) (*User, error) {
 	userMail, err := domain.NewMail(email)
 	if err != nil {
 		return nil, err
 	}
-	id := NewUserID()
+	if userID == "" {
+		userID = NewUserID()
+	}
 	return &User{
-		ID:          id,
+		ID:          userID,
 		MailAddress: userMail,
 		Name:        name,
 	}, nil
