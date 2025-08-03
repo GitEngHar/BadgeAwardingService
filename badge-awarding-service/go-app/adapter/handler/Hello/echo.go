@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
 	"net/http"
 )
 
@@ -17,5 +18,7 @@ func (h *Hello) Do() (map[string]string, error) {
 
 func (h *Hello) Hub(c echo.Context) error {
 	returnStr, _ := h.Do()
+	txn := nrecho.FromContext(c)
+	txn.AddAttribute("customAttr", "value")
 	return c.JSON(http.StatusOK, returnStr)
 }
