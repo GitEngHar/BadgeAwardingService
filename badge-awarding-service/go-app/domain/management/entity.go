@@ -3,9 +3,9 @@ package management
 import (
 	"errors"
 	"hello-world/domain"
-	"time"
 )
 
+// Badge ユーザーに付与するバッチ
 type Badge struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
@@ -30,6 +30,7 @@ func NewBadgeID(name string) string {
 	return "Badge-" + name
 }
 
+// User ユーザー情報
 type User struct {
 	ID          string
 	MailAddress domain.Mail
@@ -51,23 +52,34 @@ func NewUser(userID, email, name string) (*User, error) {
 	}, nil
 }
 
-type UserBadge struct {
-	UserID    string
-	BadgeID   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+// UserBadgeAward ユーザーが取得しているバッチの情報
+type UserBadgeAward struct {
+	UserBadgeAwardID string `json:"id"`
+	UserID           string `json:"user_id"`
+	BadgeID          string `json:"badge_id"`
 }
 
-func NewUserBadge(userID string, badgeRankID string, createdAt time.Time, updatedAt time.Time) *UserBadge {
-	return &UserBadge{
-		UserID:    userID,
-		BadgeID:   badgeRankID,
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
+func NewUserBadgeAward(UserBadgeAwardID string, userID string, badgeRankID string) (*UserBadgeAward, error) {
+	// IDを指定するには直接指定されているかIDを作成するのに必要なuserIDとbadgeRankIDの両方の値が必要
+	if UserBadgeAwardID == "" && (userID == "" || badgeRankID == "") {
+		return nil, errors.New("userID or userBadgeAwardID is empty")
 	}
+	if UserBadgeAwardID == "" {
+		UserBadgeAwardID = NewBadgeAwardID(userID, badgeRankID)
+	}
+	return &UserBadgeAward{
+		UserID:  userID,
+		BadgeID: badgeRankID,
+	}, nil
+}
+
+func NewBadgeAwardID(userID string, badgeRankID string) string {
+	return "Badge-Award-" + userID + "-" + badgeRankID
 }
 
 // TODO: DTOとわける
+
+// BadgeDetailsByRank バッチのランク別情報
 type BadgeDetailsByRank struct {
 	BadgeRankID string `json:"id"`
 	BadgeName   string `json:"name"`
