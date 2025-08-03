@@ -51,7 +51,7 @@ func NewConnectionDynamoDBForLocal() *Config {
 	}
 }
 
-func NewUserRepository(config *Config) management.UserRepository {
+func NewUserRepository(config *Config) management.Repository {
 	return &DBRepository{
 		config: *config,
 	}

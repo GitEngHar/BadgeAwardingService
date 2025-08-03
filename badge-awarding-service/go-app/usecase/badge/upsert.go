@@ -17,19 +17,19 @@ func NewUpsertUseCase(repo management.Repository) UpsertUseCase {
 }
 
 // Do Userを追加し、IDが存在する場合は更新する(少人数で利用することを想定しているのでIDは重複しない)
-func (u UpsertUseCase) Do(ctx context.Context, userID string, email string, name string) (string, error) {
-	newUser, err := management.NewUser(userID, email, name)
+func (u UpsertUseCase) Do(ctx context.Context, badgeID string, name string, reason string) (string, error) {
+	newBadge, err := management.NewBadge(badgeID, name, reason)
 	if err != nil {
 		return "", err
 	}
 	item := map[string]types.AttributeValue{
-		"id":   &types.AttributeValueMemberS{Value: newUser.ID},
-		"name": &types.AttributeValueMemberS{Value: newUser.Name},
-		"mail": &types.AttributeValueMemberS{Value: string(newUser.MailAddress)},
+		"id":     &types.AttributeValueMemberS{Value: newBadge.ID},
+		"name":   &types.AttributeValueMemberS{Value: newBadge.Name},
+		"reason": &types.AttributeValueMemberS{Value: newBadge.Reason},
 	}
 	err = u.repo.Upsert(ctx, item)
 	if err != nil {
 		return "", err
 	}
-	return newUser.ID, nil
+	return newBadge.ID, nil
 }

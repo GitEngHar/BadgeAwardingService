@@ -11,31 +11,10 @@ import (
 
 type ImageUrl string
 
-type Rank int
-
-const (
-	B Rank = iota
-	A
-	S
-)
-
 var (
 	InvalidImageUrl   = errors.New("invalid image url")
 	ImageRequireParam = errors.New("image require param is empty")
 )
-
-func (r Rank) String() string {
-	switch r {
-	case B:
-		return "B"
-	case A:
-		return "A"
-	case S:
-		return "S"
-	default:
-		return "Unknown"
-	}
-}
 
 func CreatePublicBadgeImgUrl(bucket, key string) (*string, error) {
 	if bucket == "" && key == "" {
