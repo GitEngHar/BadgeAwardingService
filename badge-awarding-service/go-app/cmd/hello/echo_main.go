@@ -28,7 +28,7 @@ func main() {
 	//	}
 	//})
 	helloHandler := handler.NewHelloHandler()
-	router := infra.NewRouter(e, helloHandler, "GET")
+	router := infra.NewRouter(e, helloHandler, nil, nil, nil)
 	config := infra.NewEchoConfig("1323", router)
 	repository := infra.NewEchoRepository(config)
 	repository.Run(e)
