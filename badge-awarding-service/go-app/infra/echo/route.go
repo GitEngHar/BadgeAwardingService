@@ -2,44 +2,55 @@ package infra
 
 import (
 	"github.com/labstack/echo/v4"
-	"log"
 )
 
-type Handler interface {
+type GetHandler interface {
 	Hub(ctx echo.Context) error
 }
-type Router struct {
-	server     *echo.Echo
-	handler    Handler
-	methodType string
+
+type PostHandler interface {
+	Hub(ctx echo.Context) error
 }
 
-func NewRouter(server *echo.Echo, handler Handler, methodType string) *Router {
-	switch methodType {
-	case "GET", "POST", "PUT", "DELETE":
-		break
-	default:
-		log.Fatalf("Unsupported method: %s", methodType)
-		return nil
-	}
+type PutHandler interface {
+	Hub(ctx echo.Context) error
+}
+
+type DeleteHandler interface {
+	Hub(ctx echo.Context) error
+}
+
+type Router struct {
+	server        *echo.Echo
+	getHandler    GetHandler
+	postHandler   PostHandler
+	putHandler    PutHandler
+	deleteHandler DeleteHandler
+	methodType    string
+}
+
+func NewRouter(server *echo.Echo, getHandler GetHandler, postHandler PostHandler, putHandler PutHandler, deleteHandler DeleteHandler) *Router {
 	return &Router{
-		server:     server,
-		handler:    handler,
-		methodType: methodType,
+		server:        server,
+		getHandler:    getHandler,
+		postHandler:   postHandler,
+		putHandler:    putHandler,
+		deleteHandler: deleteHandler,
 	}
 }
 
 func (r *Router) Do() {
 	server := r.server
-	switch r.methodType {
-	case "GET":
-		server.GET("/", r.handler.Hub)
-	case "POST":
-		server.POST("/", r.handler.Hub)
-	case "PUT":
-		server.PUT("/", r.handler.Hub)
-	case "DELETE":
-		server.DELETE("/", r.handler.Hub)
+	if r.getHandler != nil {
+		server.GET("/", r.getHandler.Hub)
 	}
-
+	if r.deleteHandler != nil {
+		server.DELETE("/", r.deleteHandler.Hub)
+	}
+	if r.postHandler != nil {
+		server.POST("/", r.postHandler.Hub)
+	}
+	if r.putHandler != nil {
+		server.PUT("/", r.putHandler.Hub)
+	}
 }
