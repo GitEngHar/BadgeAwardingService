@@ -1,4 +1,4 @@
-package user
+package badgeRank
 
 import (
 	"context"
@@ -20,9 +20,9 @@ func (u GetUseCase) Do(ctx context.Context, id string) (map[string]types.Attribu
 	item := map[string]types.AttributeValue{
 		"id": &types.AttributeValueMemberS{Value: id},
 	}
-	user, err := u.repo.Get(ctx, item)
+	badge, err := u.repo.Get(ctx, item)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return badge, nil
 }
