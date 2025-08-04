@@ -56,20 +56,21 @@ func NewUser(userID, email, name string) (*User, error) {
 type UserBadgeAward struct {
 	UserBadgeAwardID string `json:"id"`
 	UserID           string `json:"user_id"`
-	BadgeID          string `json:"badge_id"`
+	BadgeRankID      string `json:"badge_rank_id"`
 }
 
-func NewUserBadgeAward(UserBadgeAwardID string, userID string, badgeRankID string) (*UserBadgeAward, error) {
+func NewUserBadgeAward(userBadgeAwardID string, userID string, badgeRankID string) (*UserBadgeAward, error) {
 	// IDを指定するには直接指定されているかIDを作成するのに必要なuserIDとbadgeRankIDの両方の値が必要
-	if UserBadgeAwardID == "" && (userID == "" || badgeRankID == "") {
+	if userBadgeAwardID == "" && (userID == "" || badgeRankID == "") {
 		return nil, errors.New("userID or userBadgeAwardID is empty")
 	}
-	if UserBadgeAwardID == "" {
-		UserBadgeAwardID = NewBadgeAwardID(userID, badgeRankID)
+	if userBadgeAwardID == "" {
+		userBadgeAwardID = NewBadgeAwardID(userID, badgeRankID)
 	}
 	return &UserBadgeAward{
-		UserID:  userID,
-		BadgeID: badgeRankID,
+		UserBadgeAwardID: userBadgeAwardID,
+		UserID:           userID,
+		BadgeRankID:      badgeRankID,
 	}, nil
 }
 
