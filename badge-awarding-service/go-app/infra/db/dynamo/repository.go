@@ -81,6 +81,20 @@ func (d DBRepository) Get(ctx context.Context, filter map[string]types.Attribute
 	return output.Item, nil
 }
 
+func (d DBRepository) GetByOneDate(ctx context.Context, filter map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
+	output, err := d.config.Client.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: aws.String(d.config.TableName),
+		Key:       filter,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if output.Item == nil {
+		return nil, errors.New("item does not exist")
+	}
+	return output.Item, nil
+}
+
 // Delete 指定したKeyのItemを取得する
 func (d DBRepository) Del(ctx context.Context, filter map[string]types.AttributeValue) error {
 	_, err := d.config.Client.DeleteItem(ctx, &dynamodb.DeleteItemInput{

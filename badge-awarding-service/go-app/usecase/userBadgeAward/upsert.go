@@ -25,8 +25,19 @@ func (u UpsertUseCase) Do(ctx context.Context, userBadgeAwardID, userID, badgeRa
 		"id":            &types.AttributeValueMemberS{Value: newUserBadgeAward.UserBadgeAwardID},
 		"user_id":       &types.AttributeValueMemberS{Value: newUserBadgeAward.UserID},
 		"badge_rank_id": &types.AttributeValueMemberS{Value: newUserBadgeAward.BadgeRankID},
+		"update_at":     &types.AttributeValueMemberS{Value: newUserBadgeAward.UpdateAt.Format("2006-01-02")},
 	}
 	err = u.repo.Upsert(ctx, item)
+	if err != nil {
+		return "", err
+	}
+	itemForPush := map[string]types.AttributeValue{
+		"id":            &types.AttributeValueMemberS{Value: newUserBadgeAward.UpdateAt.Format("2006-01-02")},
+		"badge_id":      &types.AttributeValueMemberS{Value: newUserBadgeAward.UserID},
+		"user_id":       &types.AttributeValueMemberS{Value: newUserBadgeAward.UserID},
+		"badge_rank_id": &types.AttributeValueMemberS{Value: newUserBadgeAward.BadgeRankID},
+	}
+	err = u.repo.Upsert(ctx, itemForPush)
 	if err != nil {
 		return "", err
 	}
