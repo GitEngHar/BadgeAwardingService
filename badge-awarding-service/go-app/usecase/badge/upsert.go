@@ -23,8 +23,8 @@ func (u UpsertUseCase) Do(ctx context.Context, badgeID string, name string, reas
 		return "", err
 	}
 	item := map[string]types.AttributeValue{
-		"id":     &types.AttributeValueMemberS{Value: newBadge.ID},
-		"name":   &types.AttributeValueMemberS{Value: newBadge.Name},
+		"PK":     &types.AttributeValueMemberS{Value: newBadge.ID},
+		"SK":     &types.AttributeValueMemberS{Value: newBadge.Name},
 		"reason": &types.AttributeValueMemberS{Value: newBadge.Reason},
 	}
 	err = u.repo.Upsert(ctx, item)

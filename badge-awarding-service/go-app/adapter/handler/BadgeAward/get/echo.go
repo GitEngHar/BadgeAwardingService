@@ -11,7 +11,7 @@ import (
 
 type Handler struct{}
 
-func NewUserHandler() *Handler {
+func NewBadgeAwardHandler() *Handler {
 	return &Handler{}
 }
 
@@ -25,11 +25,11 @@ func (h Handler) Do(ctx context.Context, id string) (map[string]types.AttributeV
 	}
 	// useCase実体化
 	uc := usecase.NewGetUseCase(repo)
-	user, err := uc.Do(ctx, id)
+	badgeAward, err := uc.Do(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return badgeAward, nil
 }
 
 func (h Handler) Hub(ctx echo.Context) error {
@@ -37,9 +37,9 @@ func (h Handler) Hub(ctx echo.Context) error {
 	if id == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "id not found")
 	}
-	user, err := h.Do(ctx.Request().Context(), id)
+	badgeAward, err := h.Do(ctx.Request().Context(), id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, user)
+	return ctx.JSON(http.StatusOK, badgeAward)
 }

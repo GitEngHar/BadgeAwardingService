@@ -23,9 +23,9 @@ func (u UpsertUseCase) Do(ctx context.Context, badgeRankID, badgeName, rank, mes
 		return "", err
 	}
 	item := map[string]types.AttributeValue{
-		"id":      &types.AttributeValueMemberS{Value: newBadgeRank.BadgeRankID},
+		"PK":      &types.AttributeValueMemberS{Value: newBadgeRank.BadgeRankID},
+		"SK":      &types.AttributeValueMemberS{Value: newBadgeRank.Rank},
 		"name":    &types.AttributeValueMemberS{Value: newBadgeRank.BadgeName},
-		"rank":    &types.AttributeValueMemberS{Value: newBadgeRank.Rank},
 		"message": &types.AttributeValueMemberS{Value: newBadgeRank.Message},
 		"effect":  &types.AttributeValueMemberS{Value: newBadgeRank.Effect},
 		"reason":  &types.AttributeValueMemberS{Value: newBadgeRank.Reason},
