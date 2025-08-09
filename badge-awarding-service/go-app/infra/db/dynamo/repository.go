@@ -87,18 +87,22 @@ func (d DBRepository) GetByPK(ctx context.Context, pk string) (map[string]types.
 	return output.Items[0], nil
 }
 
-func (d DBRepository) GetByOneDate(ctx context.Context, filter map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
-	output, err := d.config.Client.GetItem(ctx, &dynamodb.GetItemInput{
-		TableName: aws.String(d.config.TableName),
-		Key:       filter,
+func (d DBRepository) GetsByPK(ctx context.Context, pk string) ([]map[string]types.AttributeValue, error) {
+	output, err := d.config.Client.Query(ctx, &dynamodb.QueryInput{
+		TableName:                aws.String(d.config.TableName),
+		KeyConditionExpression:   aws.String("#pk = :pk"),
+		ExpressionAttributeNames: map[string]string{"#pk": "PK"},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":pk": &types.AttributeValueMemberS{Value: pk},
+		},
 	})
 	if err != nil {
 		return nil, err
 	}
-	if output.Item == nil {
+	if len(output.Items) == 0 {
 		return nil, errors.New("item does not exist")
 	}
-	return output.Item, nil
+	return output.Items, nil
 }
 
 // Delete 指定したKeyのItemを取得する

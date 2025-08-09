@@ -15,7 +15,7 @@ func NewBadgeAwardHandler() *Handler {
 	return &Handler{}
 }
 
-func (h Handler) Do(ctx context.Context, id string) (map[string]types.AttributeValue, error) {
+func (h Handler) Do(ctx context.Context, id string) ([]map[string]types.AttributeValue, error) {
 	// repo実体化
 	dbConf := dynamo.NewConnectionDynamoDBForLocal()
 	repo := dynamo.NewUserRepository(dbConf)
@@ -25,7 +25,8 @@ func (h Handler) Do(ctx context.Context, id string) (map[string]types.AttributeV
 	}
 	// useCase実体化
 	uc := usecase.NewGetUseCase(repo)
-	badgeAward, err := uc.Do(ctx, id)
+	// badgeAward, err := uc.Do(ctx, id)
+	badgeAward, err := uc.AwardTargetUserByDate(ctx)
 	if err != nil {
 		return nil, err
 	}
