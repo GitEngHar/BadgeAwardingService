@@ -64,7 +64,7 @@ func NewPublisher(awardComment *AwardComment, address string) (*Publisher, error
 }
 
 func generatePublishMessage(awardComment *AwardComment) string {
-	awardMessage := fmt.Sprintf("<ノルマを達成！>, 「%s！」\n%s\n%s\n偉大な業績に敬意を表します。\n\n【報酬】\n%s", awardComment.title, awardComment.reason, awardComment.praiseComment, awardComment.effect)
+	awardMessage := fmt.Sprintf("<ノルマを達成！> \n\n「%s！」\n\n%s\n%s\n偉大な業績に敬意を表します。\n\n【報酬】\n%s", awardComment.title, awardComment.reason, awardComment.praiseComment, awardComment.effect)
 	return fmt.Sprintf("%s", awardMessage)
 }
 
@@ -74,7 +74,7 @@ func isEmptyUnsubscriptionEndpoint(endpoint UnSubscriptionEndpoint) bool {
 
 func SubscribedMessageToPublish(message types.Message) (*Publisher, error) {
 	var publisher Publisher
-	if v, ok := message.MessageAttributes["title"]; ok && v.StringValue != nil {
+	if v, ok := message.MessageAttributes["sub"]; ok && v.StringValue != nil {
 		publisher.Title = *v.StringValue
 	}
 	if v, ok := message.MessageAttributes["address"]; ok && v.StringValue != nil {

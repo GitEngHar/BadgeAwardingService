@@ -3,6 +3,7 @@ package push
 import (
 	"context"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"hello-world/domain/notification"
 )
 
@@ -15,14 +16,13 @@ func NewSubscriptionUseCase(subRepo notification.SubscriberRepository, pubRepo n
 	return &SubscriptionUseCase{subRepo: subRepo, pubRepo: pubRepo}
 }
 
-func (uc SubscriptionUseCase) Do(ctx context.Context) error {
-	//var execPublisherCount = 0
+func (uc SubscriptionUseCase) PushEmail(ctx context.Context) ([]map[string]types.MessageAttributeValue, error) {
 	// queueからメッセージをポーリングする
 	messages, err := uc.pubRepo.GetMailMessage(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
+	subscribedAwards := make([]map[string]types.MessageAttributeValue, 0)
 	// 全てのメッセージを送信する
 	for _, message := range messages {
 		subscribedPublish, err := notification.SubscribedMessageToPublish(message)
@@ -37,7 +37,22 @@ func (uc SubscriptionUseCase) Do(ctx context.Context) error {
 			fmt.Println("Publisher Error :", err)
 			continue
 		}
-		//execPublisherCount++
+
+		subscribedAwards = append(subscribedAwards, message.MessageAttributes)
 	}
-	return nil
+	return subscribedAwards, nil
+}
+
+func (uc SubscriptionUseCase) Do(ctx context.Context) ([]map[string]types.MessageAttributeValue, error) {
+	// queueからメッセージをポーリングする
+	messages, err := uc.pubRepo.GetMailMessage(ctx)
+	if err != nil {
+		return nil, err
+	}
+	subscribedAwards := make([]map[string]types.MessageAttributeValue, 0)
+	// 全てのメッセージを取得する
+	for _, message := range messages {
+		subscribedAwards = append(subscribedAwards, message.MessageAttributes)
+	}
+	return subscribedAwards, nil
 }
