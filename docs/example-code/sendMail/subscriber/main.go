@@ -122,7 +122,7 @@ func deleteSubscription(subscribe subscribe, endpoint string) error {
 			break
 		}
 	}
-	return fmt.Errorf("subscription not found in topic")
+	return fmt.Errorf("subscription_email not found in topic")
 }
 
 // TODO: dynamoDBにユーザー情報を登録する
@@ -168,7 +168,7 @@ func main() {
 		// snsエンドポイントを削除
 		err := deleteSubscription(*snsSubscribe, email)
 		if err != nil {
-			log.Println("unable to delete subscription")
+			log.Println("unable to delete subscription_email")
 		}
 		time.Sleep(20 * time.Second)
 		// TODO: dynamoDBからユーザー情報を取得

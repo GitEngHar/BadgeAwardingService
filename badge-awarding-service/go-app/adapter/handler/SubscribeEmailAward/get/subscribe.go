@@ -23,7 +23,7 @@ func (h SubscriptionHandler) Do(ctx context.Context) ([]map[string]types.Message
 	subRepo := sns.NewSubscription(snsConfig)
 	pubRepo := queue.NewPublisher(*sqsConfig)
 	uc := usecase.NewSubscriptionUseCase(subRepo, pubRepo)
-	subscribedAwards, err := uc.Do(ctx)
+	subscribedAwards, err := uc.PushEmail(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -77,7 +77,7 @@ func (s Subscription) UnSubscribeByEndpoint(ctx context.Context, endpoint string
 			}
 		}
 
-		fmt.Println("No subscription found to unsubscribe")
+		fmt.Println("No subscription_email found to unsubscribe")
 		return nil
 	}
 	return nil

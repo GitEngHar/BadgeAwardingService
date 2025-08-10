@@ -16,7 +16,7 @@ func NewSubscriptionHandler() *SubscriptionHandler {
 	return &SubscriptionHandler{}
 }
 
-// Do 配信対象のメッセージをユーザーへ全て送信しする
+// Do 配信対象のメッセージを取得する
 func (h SubscriptionHandler) Do(ctx context.Context) ([]map[string]types.MessageAttributeValue, error) {
 	snsConfig := sns.NewConfig(ctx)
 	sqsConfig := queue.NewConfig(ctx)
