@@ -16,7 +16,7 @@ func NewSubscriptionUseCase(subRepo notification.SubscriberRepository, pubRepo n
 }
 
 func (uc SubscriptionUseCase) Do(ctx context.Context) error {
-	var execPublisherCount = 0
+	//var execPublisherCount = 0
 	// queueからメッセージをポーリングする
 	messages, err := uc.pubRepo.GetMailMessage(ctx)
 	if err != nil {
@@ -25,25 +25,19 @@ func (uc SubscriptionUseCase) Do(ctx context.Context) error {
 
 	// 全てのメッセージを送信する
 	for _, message := range messages {
-		// messageのドメインを作成する
-		publisher, err := notification.SqsMessageAttributesToPublisher(message)
-
-		// 処理件数をカウント
+		subscribedPublish, err := notification.SubscribedMessageToPublish(message)
 		if err != nil {
 			fmt.Println("publisher Unmarshal Error :", err)
 			continue
 		}
 
 		// ユーザーのメールアドレスにメッセージを送信する
-		err = uc.subRepo.SendMessageToEmail(ctx, *publisher)
+		err = uc.subRepo.SendMessageToEmail(ctx, *subscribedPublish)
 		if err != nil {
 			fmt.Println("Publisher Error :", err)
 			continue
 		}
-		execPublisherCount++
+		//execPublisherCount++
 	}
-
-	//fmt.Printf("Plan %d , End %d, Perse: %d%", len(messages), execPublisherCount, execPublisherCount/len(messages))
-
 	return nil
 }

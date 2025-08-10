@@ -25,8 +25,8 @@ func (u GetUseCase) Do(ctx context.Context, id string) (map[string]types.Attribu
 	return badgeAward, nil
 }
 
-// AwardTargetUserByDate 今日の日付で報酬を通知する情報を取得する
-func (c GetUseCase) AwardTargetUserByDate(ctx context.Context) ([]map[string]types.AttributeValue, error) {
+// GetAwardTargetUserByDate 今日の日付で報酬を通知する情報を取得する
+func (c GetUseCase) GetAwardTargetUserByDate(ctx context.Context) ([]map[string]types.AttributeValue, error) {
 	awardTargetDate := time.Now().Format("2006-01-02")
 	badgeAwardTarget, err := c.repo.GetsByPK(ctx, awardTargetDate)
 	if err != nil {

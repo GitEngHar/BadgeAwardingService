@@ -5,22 +5,24 @@ import (
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
+	"hello-world/domain"
 )
-
-type Publisher struct {
-	UserName    string `json:"username"`
-	Message     string `json:"message"`
-	Address     string `json:"address"`
-	MessageBody string `json:"message_body"`
-}
 
 type UnSubscriptionEndpoint struct {
 	Address string `json:"address"`
 }
 
-type SendUserMessage struct {
+type AwardComment struct {
+	title         string
+	praiseComment string
+	reason        string
+	effect        string
+}
+
+type Publisher struct {
 	Title   string `json:"title"`
 	Message string `json:"message"`
+	Address string `json:"address"`
 }
 
 func SqsMessageAttributesToEndpoint(record events.SQSMessage) (*UnSubscriptionEndpoint, error) {
@@ -34,10 +36,47 @@ func SqsMessageAttributesToEndpoint(record events.SQSMessage) (*UnSubscriptionEn
 	return &endpoint, nil
 }
 
-func SqsMessageAttributesToPublisher(message types.Message) (*Publisher, error) {
+func NewAwardComment(title, praiseComment, reason, effect string) (*AwardComment, error) {
+	if title == "" && praiseComment == "" && reason == "" {
+		return nil, errors.New("message or public image url is empty")
+	}
+	return &AwardComment{
+		title:         title,
+		praiseComment: praiseComment,
+		reason:        reason,
+		effect:        effect,
+	}, nil
+}
+
+func NewPublisher(awardComment *AwardComment, imgUrl string, address string) (*Publisher, error) {
+	if awardComment == nil {
+		return nil, errors.New("award comment is empty")
+	}
+	if _, err := domain.NewMail(address); err != nil {
+		return nil, err
+	}
+	publishMessage := generatePublishMessage(awardComment, imgUrl)
+	return &Publisher{
+		Title:   awardComment.title,
+		Message: publishMessage,
+		Address: address,
+	}, nil
+}
+
+func generatePublishMessage(awardComment *AwardComment, imgUrl string) string {
+	awardMessage := fmt.Sprintf("<ノルマを達成！>, 「%s！」\n%s\n%s\n偉大な業績に敬意を表します。\n\n【報酬】\n%s", awardComment.title, awardComment.reason, awardComment.praiseComment, awardComment.effect)
+	imgViewMessage := fmt.Sprintf("<!DOCTYPE html><html><body><img src='%s' /></body></html>", imgUrl)
+	return fmt.Sprintf("%s\n\n%s", awardMessage, imgViewMessage)
+}
+
+func isEmptyUnsubscriptionEndpoint(endpoint UnSubscriptionEndpoint) bool {
+	return endpoint.Address == ""
+}
+
+func SubscribedMessageToPublish(message types.Message) (*Publisher, error) {
 	var publisher Publisher
-	if message.Body != nil {
-		publisher.MessageBody = *message.Body
+	if v, ok := message.MessageAttributes["title"]; ok && v.StringValue != nil {
+		publisher.Title = *v.StringValue
 	}
 	if v, ok := message.MessageAttributes["address"]; ok && v.StringValue != nil {
 		publisher.Address = *v.StringValue
@@ -45,30 +84,5 @@ func SqsMessageAttributesToPublisher(message types.Message) (*Publisher, error) 
 	if v, ok := message.MessageAttributes["message"]; ok && v.StringValue != nil {
 		publisher.Message = *v.StringValue
 	}
-	if isEmptyPublisher(publisher) {
-		return nil, errors.New("missing required field 'address'")
-	}
-	// userNameは不要なのでコメントアウトにしておく
-	//if v, ok := attrs["userName"]; ok && v.StringValue != nil {
-	//	p.UserName = *v.StringValue
-	//}
 	return &publisher, nil
-}
-
-func GenerateSendMessageWithImgUrl(title, publicImgUrl string) (*SendUserMessage, error) {
-	if title == "" && publicImgUrl == "" {
-		return nil, errors.New("message or public image url is empty")
-	}
-	return &SendUserMessage{
-		Title:   title,
-		Message: fmt.Sprintf("<!DOCTYPE html><html><body><h2>%s</h2><img src='%s' /></body></html>", title, publicImgUrl),
-	}, nil
-}
-
-func isEmptyUnsubscriptionEndpoint(endpoint UnSubscriptionEndpoint) bool {
-	return endpoint.Address == ""
-}
-
-func isEmptyPublisher(publisher Publisher) bool {
-	return publisher.Address == "" && publisher.Message == "" && publisher.MessageBody == ""
 }

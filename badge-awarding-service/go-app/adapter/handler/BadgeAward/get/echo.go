@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/labstack/echo/v4"
 	"hello-world/infra/db/dynamo"
-	usecase "hello-world/usecase/userBadgeAward"
+	badgeAwardUsecase "hello-world/usecase/userBadgeAward"
 	"net/http"
 )
 
@@ -18,15 +18,15 @@ func NewBadgeAwardHandler() *Handler {
 func (h Handler) Do(ctx context.Context, id string) ([]map[string]types.AttributeValue, error) {
 	// repo実体化
 	dbConf := dynamo.NewConnectionDynamoDBForLocal()
-	repo := dynamo.NewUserRepository(dbConf)
+	dynamodbRepo := dynamo.NewUserRepository(dbConf)
 	// tableの作成
-	if err := repo.CreateTable(ctx); err != nil {
+	if err := dynamodbRepo.CreateTable(ctx); err != nil {
 		return nil, err
 	}
 	// useCase実体化
-	uc := usecase.NewGetUseCase(repo)
+	badgeAwardGetUseCase := badgeAwardUsecase.NewGetUseCase(dynamodbRepo)
 	// badgeAward, err := uc.Do(ctx, id)
-	badgeAward, err := uc.AwardTargetUserByDate(ctx)
+	badgeAward, err := badgeAwardGetUseCase.GetAwardTargetUserByDate(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package Push
+package PushAward
 
 import (
 	"github.com/labstack/echo/v4"
@@ -14,17 +14,13 @@ func NewSubscriptionHandler() *SubscriptionHandler {
 	return &SubscriptionHandler{}
 }
 
-// Do TODO: echoの依存性を解放する
+// Do 配信対象のメッセージをユーザーへ全て送信しする
 func (h SubscriptionHandler) Do(ctx echo.Context) error {
-	// repo実体化
 	snsConfig := sns.NewConfig(ctx.Request().Context())
 	sqsConfig := queue.NewConfig(ctx.Request().Context())
 	subRepo := sns.NewSubscription(snsConfig)
 	pubRepo := queue.NewPublisher(*sqsConfig)
-	// useCase実体化
 	uc := usecase.NewSubscriptionUseCase(subRepo, pubRepo)
-
-	// sqsにメッセージをパブリッシュ
 	err := uc.Do(ctx.Request().Context())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

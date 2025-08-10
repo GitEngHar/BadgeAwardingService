@@ -13,6 +13,6 @@ type SubscriberRepository interface {
 }
 
 type MessagePublisher interface {
-	PublishMailMessage(ctx context.Context, messageBody string, sqsMessageAttributes map[string]types.MessageAttributeValue) error
+	PublishMailMessage(ctx context.Context, entries []types.SendMessageBatchRequestEntry) error
 	GetMailMessage(ctx context.Context) ([]types.Message, error)
 }
