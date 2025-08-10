@@ -1,4 +1,4 @@
-package PushAward
+package PublishAward
 
 import (
 	"context"

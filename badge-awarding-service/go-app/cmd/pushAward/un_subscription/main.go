@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"hello-world/adapter/handler/PushAward"
+	"hello-world/adapter/handler/PublishAward"
 	"hello-world/domain/notification"
 	"hello-world/infra/sns"
 	"hello-world/usecase/push"
@@ -21,7 +21,7 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 		repoConfig := sns.NewConfig(ctx)
 		repo := sns.NewSubscription(repoConfig)
 		uc := push.NewUnSubscriptionUseCase(repo)
-		UnsubscriptionHandler := PushAward.NewUnSubscriptionHandler(*uc)
+		UnsubscriptionHandler := PublishAward.NewUnSubscriptionHandler(*uc)
 		return UnsubscriptionHandler.Do(ctx, *endpoint)
 	}
 

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	gethandler "hello-world/adapter/handler/PushAward/get"
+	gethandler "hello-world/adapter/handler/PublishAward/get"
 	infra "hello-world/infra/echo"
 )
 
