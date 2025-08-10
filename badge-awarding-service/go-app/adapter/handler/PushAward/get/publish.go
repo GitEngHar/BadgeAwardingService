@@ -53,8 +53,6 @@ func (h Handler) Do(ctx context.Context) error {
 }
 
 func createPublishers(ctx context.Context, pushTargetUsers []map[string]types.AttributeValue, dynamodbRepo management.Repository) ([]notification.Publisher, error) {
-	//TODO: imgUrlをちゃんとした内容にする
-	var imgUrl string
 	var publishers []notification.Publisher
 	var userDomain *management.User
 	var badgeRankDomain *management.BadgeDetailsByRank
@@ -95,7 +93,7 @@ func createPublishers(ctx context.Context, pushTargetUsers []map[string]types.At
 		if err != nil {
 			return nil, err
 		}
-		publisher, err = notification.NewPublisher(awardComment, imgUrl, string(userDomain.MailAddress))
+		publisher, err = notification.NewPublisher(awardComment, string(userDomain.MailAddress))
 		if publisher != nil {
 			publishers = append(publishers, *publisher)
 		} else {

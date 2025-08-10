@@ -48,14 +48,14 @@ func NewAwardComment(title, praiseComment, reason, effect string) (*AwardComment
 	}, nil
 }
 
-func NewPublisher(awardComment *AwardComment, imgUrl string, address string) (*Publisher, error) {
+func NewPublisher(awardComment *AwardComment, address string) (*Publisher, error) {
 	if awardComment == nil {
 		return nil, errors.New("award comment is empty")
 	}
 	if _, err := domain.NewMail(address); err != nil {
 		return nil, err
 	}
-	publishMessage := generatePublishMessage(awardComment, imgUrl)
+	publishMessage := generatePublishMessage(awardComment)
 	return &Publisher{
 		Title:   awardComment.title,
 		Message: publishMessage,
@@ -63,10 +63,9 @@ func NewPublisher(awardComment *AwardComment, imgUrl string, address string) (*P
 	}, nil
 }
 
-func generatePublishMessage(awardComment *AwardComment, imgUrl string) string {
+func generatePublishMessage(awardComment *AwardComment) string {
 	awardMessage := fmt.Sprintf("<ノルマを達成！>, 「%s！」\n%s\n%s\n偉大な業績に敬意を表します。\n\n【報酬】\n%s", awardComment.title, awardComment.reason, awardComment.praiseComment, awardComment.effect)
-	imgViewMessage := fmt.Sprintf("<!DOCTYPE html><html><body><img src='%s' /></body></html>", imgUrl)
-	return fmt.Sprintf("%s\n\n%s", awardMessage, imgViewMessage)
+	return fmt.Sprintf("%s", awardMessage)
 }
 
 func isEmptyUnsubscriptionEndpoint(endpoint UnSubscriptionEndpoint) bool {
