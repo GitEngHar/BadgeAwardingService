@@ -47,13 +47,12 @@ func NewPublisher(config Config) notification.MessagePublisher {
 	return Publisher{config: config}
 }
 
-func (q Publisher) PublishMailMessage(ctx context.Context, messageBody string, sqsMessageAttributes map[string]types.MessageAttributeValue) error {
-	input := &sqs.SendMessageInput{
-		QueueUrl:          &q.config.queueUrl,
-		MessageBody:       aws.String(messageBody),
-		MessageAttributes: sqsMessageAttributes,
+func (q Publisher) PublishMailMessage(ctx context.Context, entries []types.SendMessageBatchRequestEntry) error {
+	input := &sqs.SendMessageBatchInput{
+		QueueUrl: &q.config.queueUrl,
+		Entries:  entries,
 	}
-	_, err := q.config.client.SendMessage(ctx, input)
+	_, err := q.config.client.SendMessageBatch(ctx, input)
 	if err != nil {
 		return err
 	}

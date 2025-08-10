@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"log"
 	"net/mail"
 )
@@ -41,4 +42,13 @@ func NewMailMessage(to, subject, body string) *MailMessage {
 		Subject: subject,
 		Body:    body,
 	}
+}
+
+func GetStringAttr(item map[string]types.AttributeValue, key string) (string, bool) {
+	if v, ok := item[key]; ok { // 存在チェック
+		if av, ok := v.(*types.AttributeValueMemberS); ok { // S型チェック
+			return av.Value, true
+		}
+	}
+	return "", false // 無い or S型じゃない
 }

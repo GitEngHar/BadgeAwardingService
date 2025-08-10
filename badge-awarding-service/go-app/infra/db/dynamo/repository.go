@@ -67,18 +67,42 @@ func (d DBRepository) Upsert(ctx context.Context, item map[string]types.Attribut
 }
 
 // Get 指定したKeyのItemを取得する
-func (d DBRepository) Get(ctx context.Context, filter map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
-	output, err := d.config.Client.GetItem(ctx, &dynamodb.GetItemInput{
-		TableName: aws.String(d.config.TableName),
-		Key:       filter,
+func (d DBRepository) GetByPK(ctx context.Context, pk string) (map[string]types.AttributeValue, error) {
+	output, err := d.config.Client.Query(ctx, &dynamodb.QueryInput{
+		TableName:                aws.String(d.config.TableName),
+		KeyConditionExpression:   aws.String("#pk = :pk"),
+		ExpressionAttributeNames: map[string]string{"#pk": "PK"},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":pk": &types.AttributeValueMemberS{Value: pk},
+		},
+		ScanIndexForward: aws.Bool(false), // SK降順
+		Limit:            aws.Int32(1),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if output.Item == nil {
+	if len(output.Items) == 0 {
 		return nil, errors.New("item does not exist")
 	}
-	return output.Item, nil
+	return output.Items[0], nil
+}
+
+func (d DBRepository) GetsByPK(ctx context.Context, pk string) ([]map[string]types.AttributeValue, error) {
+	output, err := d.config.Client.Query(ctx, &dynamodb.QueryInput{
+		TableName:                aws.String(d.config.TableName),
+		KeyConditionExpression:   aws.String("#pk = :pk"),
+		ExpressionAttributeNames: map[string]string{"#pk": "PK"},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":pk": &types.AttributeValueMemberS{Value: pk},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(output.Items) == 0 {
+		return nil, errors.New("item does not exist")
+	}
+	return output.Items, nil
 }
 
 // Delete 指定したKeyのItemを取得する
@@ -95,15 +119,14 @@ func (d DBRepository) CreateTable(ctx context.Context) error {
 	_, err := d.config.Client.CreateTable(ctx, &dynamodb.CreateTableInput{
 		TableName: aws.String(d.config.TableName),
 		KeySchema: []types.KeySchemaElement{
-			{AttributeName: aws.String("id"), KeyType: types.KeyTypeHash},
+			{AttributeName: aws.String("PK"), KeyType: types.KeyTypeHash},
+			{AttributeName: aws.String("SK"), KeyType: types.KeyTypeRange},
 		},
 		AttributeDefinitions: []types.AttributeDefinition{
-			{AttributeName: aws.String("id"), AttributeType: types.ScalarAttributeTypeS},
+			{AttributeName: aws.String("PK"), AttributeType: types.ScalarAttributeTypeS},
+			{AttributeName: aws.String("SK"), AttributeType: types.ScalarAttributeTypeS},
 		},
-		ProvisionedThroughput: &types.ProvisionedThroughput{
-			ReadCapacityUnits:  aws.Int64(5),
-			WriteCapacityUnits: aws.Int64(5),
-		},
+		BillingMode: types.BillingModePayPerRequest,
 	})
 	if err != nil {
 		var re *types.ResourceInUseException

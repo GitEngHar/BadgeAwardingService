@@ -23,8 +23,8 @@ func (u UpsertUseCase) Do(ctx context.Context, userID string, email string, name
 		return "", err
 	}
 	item := map[string]types.AttributeValue{
-		"id":   &types.AttributeValueMemberS{Value: newUser.ID},
-		"name": &types.AttributeValueMemberS{Value: newUser.Name},
+		"PK":   &types.AttributeValueMemberS{Value: newUser.ID},
+		"SK":   &types.AttributeValueMemberS{Value: newUser.Name},
 		"mail": &types.AttributeValueMemberS{Value: string(newUser.MailAddress)},
 	}
 	err = u.repo.Upsert(ctx, item)

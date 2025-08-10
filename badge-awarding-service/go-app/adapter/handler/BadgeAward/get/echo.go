@@ -5,31 +5,32 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/labstack/echo/v4"
 	"hello-world/infra/db/dynamo"
-	usecase "hello-world/usecase/userBadgeAward"
+	badgeAwardUsecase "hello-world/usecase/userBadgeAward"
 	"net/http"
 )
 
 type Handler struct{}
 
-func NewUserHandler() *Handler {
+func NewBadgeAwardHandler() *Handler {
 	return &Handler{}
 }
 
-func (h Handler) Do(ctx context.Context, id string) (map[string]types.AttributeValue, error) {
+func (h Handler) Do(ctx context.Context, id string) ([]map[string]types.AttributeValue, error) {
 	// repo実体化
 	dbConf := dynamo.NewConnectionDynamoDBForLocal()
-	repo := dynamo.NewUserRepository(dbConf)
+	dynamodbRepo := dynamo.NewUserRepository(dbConf)
 	// tableの作成
-	if err := repo.CreateTable(ctx); err != nil {
+	if err := dynamodbRepo.CreateTable(ctx); err != nil {
 		return nil, err
 	}
 	// useCase実体化
-	uc := usecase.NewGetUseCase(repo)
-	user, err := uc.Do(ctx, id)
+	badgeAwardGetUseCase := badgeAwardUsecase.NewGetUseCase(dynamodbRepo)
+	// badgeAward, err := uc.Do(ctx, id)
+	badgeAward, err := badgeAwardGetUseCase.GetAwardTargetUserByDate(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return badgeAward, nil
 }
 
 func (h Handler) Hub(ctx echo.Context) error {
@@ -37,9 +38,9 @@ func (h Handler) Hub(ctx echo.Context) error {
 	if id == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "id not found")
 	}
-	user, err := h.Do(ctx.Request().Context(), id)
+	badgeAward, err := h.Do(ctx.Request().Context(), id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, user)
+	return ctx.JSON(http.StatusOK, badgeAward)
 }

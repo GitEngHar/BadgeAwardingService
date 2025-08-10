@@ -17,10 +17,7 @@ func NewGetUseCase(repo management.Repository) GetUseCase {
 }
 
 func (u GetUseCase) Do(ctx context.Context, id string) (map[string]types.AttributeValue, error) {
-	item := map[string]types.AttributeValue{
-		"id": &types.AttributeValueMemberS{Value: id},
-	}
-	badgeRank, err := u.repo.Get(ctx, item)
+	badgeRank, err := u.repo.GetByPK(ctx, id)
 	if err != nil {
 		return nil, err
 	}

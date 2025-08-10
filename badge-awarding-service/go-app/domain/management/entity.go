@@ -3,6 +3,7 @@ package management
 import (
 	"errors"
 	"hello-world/domain"
+	"time"
 )
 
 // Badge ユーザーに付与するバッチ
@@ -57,6 +58,7 @@ type UserBadgeAward struct {
 	UserBadgeAwardID string `json:"id"`
 	UserID           string `json:"user_id"`
 	BadgeRankID      string `json:"badge_rank_id"`
+	UpdateAt         time.Time
 }
 
 func NewUserBadgeAward(userBadgeAwardID string, userID string, badgeRankID string) (*UserBadgeAward, error) {
@@ -71,6 +73,7 @@ func NewUserBadgeAward(userBadgeAwardID string, userID string, badgeRankID strin
 		UserBadgeAwardID: userBadgeAwardID,
 		UserID:           userID,
 		BadgeRankID:      badgeRankID,
+		UpdateAt:         time.Now(),
 	}, nil
 }
 

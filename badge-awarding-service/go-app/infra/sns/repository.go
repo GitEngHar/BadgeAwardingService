@@ -77,7 +77,7 @@ func (s Subscription) UnSubscribeByEndpoint(ctx context.Context, endpoint string
 			}
 		}
 
-		fmt.Println("No subscription found to unsubscribe")
+		fmt.Println("No subscription_email found to unsubscribe")
 		return nil
 	}
 	return nil
@@ -103,7 +103,7 @@ func (s Subscription) SendMessageToEmail(ctx context.Context, publisher notifica
 	_, err = s.config.client.Publish(ctx, &sns.PublishInput{
 		TopicArn: aws.String(s.config.topicArn),
 		Message:  aws.String(publisher.Message),
-		Subject:  aws.String(publisher.MessageBody),
+		Subject:  aws.String(publisher.Title),
 	})
 
 	if err != nil {

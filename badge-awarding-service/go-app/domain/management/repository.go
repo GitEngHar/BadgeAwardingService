@@ -9,7 +9,8 @@ import (
 
 type Repository interface {
 	Upsert(ctx context.Context, item map[string]types.AttributeValue) error
-	Get(ctx context.Context, item map[string]types.AttributeValue) (map[string]types.AttributeValue, error)
+	GetByPK(ctx context.Context, pk string) (map[string]types.AttributeValue, error)
+	GetsByPK(ctx context.Context, pk string) ([]map[string]types.AttributeValue, error)
 	Del(ctx context.Context, filter map[string]types.AttributeValue) error
 	CreateTable(ctx context.Context) error
 }
