@@ -50,21 +50,8 @@ func (uc SubscriptionUseCase) Do(ctx context.Context) ([]map[string]types.Messag
 		return nil, err
 	}
 	subscribedAwards := make([]map[string]types.MessageAttributeValue, 0)
-	// 全てのメッセージを送信する
+	// 全てのメッセージを取得する
 	for _, message := range messages {
-		subscribedPublish, err := notification.SubscribedMessageToPublish(message)
-		if err != nil {
-			fmt.Println("publisher Unmarshal Error :", err)
-			continue
-		}
-
-		// ユーザーのメールアドレスにメッセージを送信する
-		err = uc.subRepo.SendMessageToEmail(ctx, *subscribedPublish)
-		if err != nil {
-			fmt.Println("Publisher Error :", err)
-			continue
-		}
-
 		subscribedAwards = append(subscribedAwards, message.MessageAttributes)
 	}
 	return subscribedAwards, nil
