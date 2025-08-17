@@ -1,12 +1,15 @@
 require (
-	github.com/aws/aws-lambda-go v1.36.1
+	github.com/aws/aws-lambda-go v1.41.0
 	github.com/aws/aws-sdk-go v1.55.7
 	github.com/aws/aws-sdk-go-v2 v1.36.6
 	github.com/aws/aws-sdk-go-v2/config v1.29.18
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.44.0
 	github.com/aws/aws-sdk-go-v2/service/sns v1.34.7
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.38.8
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/google/go-cmp v0.7.0
+	github.com/google/wire v0.6.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/newrelic/go-agent/v3 v3.40.1
 	github.com/newrelic/go-agent/v3/integrations/nrecho-v4 v1.1.5

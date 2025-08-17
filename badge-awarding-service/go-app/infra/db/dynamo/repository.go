@@ -34,7 +34,7 @@ func NewConnectionDynamoDBForAWS(ctx context.Context) *Config {
 
 func NewConnectionDynamoDBForLocal() *Config {
 	region := "ap-northeast-1"
-	endpoint := "http://localhost:8000"
+	endpoint := "http://db:8000"
 	dynamodbDefaultConfig, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 	if err != nil {
 		panic("unable to load SDK config, " + err.Error())

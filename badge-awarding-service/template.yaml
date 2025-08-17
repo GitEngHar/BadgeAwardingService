@@ -18,86 +18,26 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
-  HealthFunction:
+  BadgeFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: go-app/cmd/hello/lambda
-      Handler: bootstrap
-      Runtime: provided.al2023
-      Architectures:
-        - x86_64
-      Events:
-        CatchHello:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /health
-            Method: GET
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
-  UnsubscribeFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: go1.x
-    Properties:
-      CodeUri: go-app/cmd/pushAward/un_subscription
-      Handler: bootstrap
-      Runtime: provided.al2023
-      Architectures:
-        - x86_64
-    Policies:
-      - SQSPollerPolicy:
-          QueueName: TestDeadLetterQueue
-    Events:
-      SQSTrigger:
-        Type: SQS
-        Properties:
-          Queue: !Sub arn:aws:sns:ap-northeast-1:${AWS::AccountId}:TestMailTopic
-    Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-      Variables:
-        SNS_TOPIC_ARN: !Sub arn:aws:sns:ap-northeast-1:${AWS::AccountId}:TestMailTopic
-        QUEUE_URL: !Sub https://sqs.ap-northeast-1.amazonaws.com/${AWS::AccountId}/TestQueue
-
-  ApplicationResourceGroup:
-    Type: AWS::ResourceGroups::Group
-    Properties:
-      Name:
-        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
-      ResourceQuery:
-        Type: CLOUDFORMATION_STACK_1_0
-  ApplicationInsightsMonitoring:
-    Type: AWS::ApplicationInsights::Application
-    Properties:
-      ResourceGroupName:
-        Ref: ApplicationResourceGroup
-      AutoConfigurationEnabled: 'true'
-
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: go1.x
-    Properties:
-      CodeUri: go-app/
-      Handler: bootstrap
+      CodeUri: go-app
+      Handler: cmd
       Runtime: provided.al2023
       Architectures:
       - x86_64
       Events:
-        CatchHello:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: GET
         CatchProxy:
           Type: Api
           Properties:
             Path: /{proxy+}
-            Method: GET
+            Method: ANY
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          PARAM1: VALUE
+          SNS_TOPIC_ARN: !Sub arn:aws:sns:ap-northeast-1:${AWS::AccountId}:TestMailTopic
+          QUEUE_URL: !Sub https://sqs.ap-northeast-1.amazonaws.com/${AWS::AccountId}/TestQueue
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

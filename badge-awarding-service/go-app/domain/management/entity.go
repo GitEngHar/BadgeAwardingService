@@ -13,6 +13,12 @@ type Badge struct {
 	Reason string `json:"reason"`
 }
 
+type BadgeDTO struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Reason string `json:"reason"`
+}
+
 func NewBadge(id, name, reason string) (*Badge, error) {
 	if name == "" {
 		return nil, errors.New("name is empty")
