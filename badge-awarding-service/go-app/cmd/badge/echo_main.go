@@ -12,7 +12,7 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	getUserHandler := getHandler.NewUserHandler()
+	getUserHandler := getHandler.NewBadgeHandler()
 	upsertBadgeHandler := upsertHandler.NewBadgeHandler()
 	router := infra.NewRouter(e, getUserHandler, upsertBadgeHandler, nil, nil)
 	config := infra.NewEchoConfig("1323", router)

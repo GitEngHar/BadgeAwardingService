@@ -11,7 +11,7 @@ import (
 
 type Handler struct{}
 
-func NewUserHandler() *Handler {
+func NewBadgeRankHandler() *Handler {
 	return &Handler{}
 }
 
