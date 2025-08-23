@@ -15,7 +15,7 @@ func NewBadgeAwardHandler() *Handler {
 	return &Handler{}
 }
 
-func (h Handler) Do(ctx context.Context, id string) ([]map[string]types.AttributeValue, error) {
+func (h Handler) Do(ctx context.Context) ([]map[string]types.AttributeValue, error) {
 	// repo実体化
 	dbConf := dynamo.NewConnectionDynamoDBForLocal()
 	dynamodbRepo := dynamo.NewUserRepository(dbConf)
@@ -34,11 +34,7 @@ func (h Handler) Do(ctx context.Context, id string) ([]map[string]types.Attribut
 }
 
 func (h Handler) Hub(ctx echo.Context) error {
-	id := ctx.QueryParam("id")
-	if id == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "id not found")
-	}
-	badgeAward, err := h.Do(ctx.Request().Context(), id)
+	badgeAward, err := h.Do(ctx.Request().Context())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

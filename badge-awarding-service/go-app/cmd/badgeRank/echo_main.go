@@ -13,7 +13,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	getUserHandler := getHandler.NewBadgeRankHandler()
-	upsertBadgeHandler := upsertHandler.NewBadgeHandler()
+	upsertBadgeHandler := upsertHandler.NewBadgeRankHandler()
 	router := infra.NewRouter(e, getUserHandler, upsertBadgeHandler, nil, nil)
 	config := infra.NewEchoConfig("1323", router)
 	echoRepo := infra.NewEchoRepository(config)

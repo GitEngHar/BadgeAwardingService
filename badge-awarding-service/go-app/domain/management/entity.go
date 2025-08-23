@@ -60,6 +60,13 @@ func NewUser(userID, email, name string) (*User, error) {
 }
 
 // UserBadgeAward ユーザーが取得しているバッチの情報
+type UserBadgeAwardDTO struct {
+	UserBadgeAwardID string `json:"id"`
+	UserID           string `json:"user_id"`
+	BadgeRankID      string `json:"badge_rank_id"`
+	UpdateAt         time.Time
+}
+
 type UserBadgeAward struct {
 	UserBadgeAwardID string `json:"id"`
 	UserID           string `json:"user_id"`
@@ -90,6 +97,15 @@ func NewBadgeAwardID(userID string, badgeRankID string) string {
 // TODO: DTOとわける
 
 // BadgeDetailsByRank バッチのランク別情報
+type BadgeDetailsByRankDTO struct {
+	BadgeRankID string `json:"id"`
+	BadgeName   string `json:"name"`
+	Rank        string `json:"rank"`
+	Message     string `json:"message"`
+	Effect      string `json:"effect"`
+	Reason      string `json:"reason"`
+}
+
 type BadgeDetailsByRank struct {
 	BadgeRankID string `json:"id"`
 	BadgeName   string `json:"name"`
