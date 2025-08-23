@@ -9,46 +9,49 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"hello-world/domain/management"
+	"os"
 	"time"
 )
 
 const (
-	tableName = "badge-service"
+	localTableName = "badge-service"
 )
 
 type DBRepository struct {
 	config Config
 }
 
-func NewConnectionDynamoDBForAWS(ctx context.Context) *Config {
-	dynamodbDefaultConfig, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		panic("unable to load SDK config, " + err.Error())
-	}
-	dynamodbClient := dynamodb.NewFromConfig(dynamodbDefaultConfig)
-	return &Config{
-		TableName: tableName,
-		Client:    dynamodbClient,
-	}
-}
-
 func NewConnectionDynamoDBForLocal() *Config {
-	region := "ap-northeast-1"
-	endpoint := "http://db:8000"
-	dynamodbDefaultConfig, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
-	if err != nil {
-		panic("unable to load SDK config, " + err.Error())
+	if os.Getenv("ENVIRONMENT") == "PROD" {
+		dynamodbDefaultConfig, err := config.LoadDefaultConfig(context.TODO())
+		if err != nil {
+			panic("unable to load SDK config, " + err.Error())
+		}
+		dynamodbClient := dynamodb.NewFromConfig(dynamodbDefaultConfig)
+		return &Config{
+			// template.yamlで動的に決定している
+			TableName: os.Getenv("TABLE_NAME"),
+			Client:    dynamodbClient,
+		}
+	} else {
+		region := "ap-northeast-1"
+		endpoint := "http://db:8000"
+		dynamodbDefaultConfig, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+		if err != nil {
+			panic("unable to load SDK config, " + err.Error())
+		}
+
+		// クライアント生成
+		dynamodbClient := dynamodb.NewFromConfig(dynamodbDefaultConfig, func(o *dynamodb.Options) {
+			o.BaseEndpoint = aws.String(endpoint)
+		})
+
+		return &Config{
+			TableName: localTableName,
+			Client:    dynamodbClient,
+		}
 	}
 
-	// クライアント生成
-	dynamodbClient := dynamodb.NewFromConfig(dynamodbDefaultConfig, func(o *dynamodb.Options) {
-		o.BaseEndpoint = aws.String(endpoint)
-	})
-
-	return &Config{
-		TableName: tableName,
-		Client:    dynamodbClient,
-	}
 }
 
 func NewUserRepository(config *Config) management.Repository {

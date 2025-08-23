@@ -7,6 +7,7 @@ import (
 	"hello-world/infra/db/dynamo"
 	usecase "hello-world/usecase/badgeRank"
 	"net/http"
+	"os"
 )
 
 type Handler struct{}
@@ -19,9 +20,11 @@ func (h Handler) Do(ctx context.Context, id string) (map[string]types.AttributeV
 	// repo実体化
 	dbConf := dynamo.NewConnectionDynamoDBForLocal()
 	repo := dynamo.NewUserRepository(dbConf)
-	// tableの作成
-	if err := repo.CreateTable(ctx); err != nil {
-		return nil, err
+	// PROD環境ではCFが作成するためアプリでは作成しない
+	if os.Getenv("ENVIRONMENT") != "PROD" {
+		if err := repo.CreateTable(ctx); err != nil {
+			return nil, err
+		}
 	}
 	// useCase実体化
 	uc := usecase.NewGetUseCase(repo)
