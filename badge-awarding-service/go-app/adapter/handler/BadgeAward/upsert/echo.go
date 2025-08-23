@@ -11,7 +11,7 @@ import (
 
 type Handler struct{}
 
-func NewBadgeHandler() *Handler {
+func NewBadgeAwardHandler() *Handler {
 	return &Handler{}
 }
 
